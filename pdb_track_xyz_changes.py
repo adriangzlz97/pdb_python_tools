@@ -6,6 +6,7 @@
     chainid (chain id), seqid (residue number), x, y, z (location), occ (occupancy), biso (b factor), xyz_change (movement compared to another pdb)
     
 """    
+import math
 class Atom:
     def __init__(self, atomid, element, altid, restyp, chainid, seqid, x, y, z, occ, biso, xyz_change):
         self.atomid = atomid
@@ -36,10 +37,22 @@ def displace_xyz(pdb, distance):
         atom.x += distance
         atom.y += distance
         atom.z += distance
+#Define function to compare atom distances and write into the atom attribute
+def compare_pdb_xyz(pdb1, pdb2):
+    for atom1 in pdb1:
+        for atom2 in pdb2:
+            #Make sure it is the same atom being compared
+            if atom1.atomid == atom2.atomid:
+                #Get coordinates from each atom
+                x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                #Calculate vector distance
+                xyz = math.sqrt((x1-x2),(y1-y2),(z1-z2))
 
-
+import copy
 file1 = open("test.pdb", 'r')
 pdb1 = get_atoms_from_pdb(file1)
+pdb2 = copy.deepcopy(pdb1)
+displace_xyz(pdb2,1)
 print(pdb1[0].x)
-displace_xyz(pdb1,1)
-print(pdb1[0].x)
+print(pdb2[0].x)
