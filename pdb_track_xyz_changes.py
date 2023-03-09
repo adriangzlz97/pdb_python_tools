@@ -1,13 +1,25 @@
 #!/bin/env/python
 
-"""
-#Define atom class:
-    Attributes: atomid (id for the atom), element (C, N, O ...), altid (id within residue), restyp (residue type), 
-    chainid (chain id), seqid (residue number), x, y, z (location), occ (occupancy), biso (b factor), xyz_change (movement compared to another pdb)
-    
-"""    
+ 
 import math
 class Atom:
+    """
+    Define atom class.
+    
+    Attributes
+    ----------
+    atomid : id for the atom
+    element : C, N, O ...
+    altid : id within residue
+    restyp : residue type 
+    chainid : chain id
+    seqid : residue number 
+    x, y, z : location
+    occ : occupancy
+    biso : b factor
+    xyz_change : movement compared to another pdb
+    
+    """   
     def __init__(self, atomid, element, altid, restyp, chainid, seqid, x, y, z, occ, biso, xyz_change):
         self.atomid = atomid
         self.element = element
@@ -21,6 +33,8 @@ class Atom:
         self.occ = occ
         self.biso = biso
         self.xyz_change = xyz_change
+    def print_info(self):
+        print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (self.atomid, self.element, self.altid, self.restyp, self.chainid, self.seqid, self.x, self.y, self.z, self.occ, self.biso, self.xyz_change))
 #Function to parse through the pdb file and obtain a list of atoms
 def get_atoms_from_pdb(file):
     lines = file.readlines()
@@ -32,11 +46,12 @@ def get_atoms_from_pdb(file):
             pdb += [Atom(line[1],line[2], line[3], line[5], line[6], line[7], float(line[10]), float(line[11]), float(line[12]), line[13], line[14],0 )]
             count += 1
     return(pdb)
-def displace_xyz(pdb, distance):
+import random
+def displace_xyz(pdb):
     for atom in pdb:
-        atom.x += distance
-        atom.y += distance
-        atom.z += distance
+        atom.x += random.randint(1,5)
+        atom.y += random.randint(1,5)
+        atom.z += random.randint(1,5)
 #Define function to compare atom distances and write into the atom attribute
 def compare_pdb_xyz(pdb1, pdb2):
     for atom1 in pdb1:
@@ -47,12 +62,17 @@ def compare_pdb_xyz(pdb1, pdb2):
                 x1, y1, z1 = atom1.x, atom1.y, atom1.z
                 x2, y2, z2 = atom2.x, atom2.y, atom2.z
                 #Calculate vector distance
-                xyz = math.sqrt((x1-x2),(y1-y2),(z1-z2))
+                xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                xyz = math.sqrt(xyz)
+                #Write distance to attribute
+                atom1.xyz_change = xyz
 
 import copy
 file1 = open("test.pdb", 'r')
 pdb1 = get_atoms_from_pdb(file1)
 pdb2 = copy.deepcopy(pdb1)
-displace_xyz(pdb2,1)
-print(pdb1[0].x)
-print(pdb2[0].x)
+displace_xyz(pdb2)
+compare_pdb_xyz(pdb1,pdb2)
+pdb1.sort(key=lambda x: x.xyz_change, reverse=True)
+for i in pdb1:
+    i.print_info()
