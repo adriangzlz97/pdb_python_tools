@@ -1,6 +1,4 @@
 #!/bin/env/python
-
- 
 import math
 class Atom:
     """
@@ -43,7 +41,7 @@ def get_atoms_from_pdb(file):
     for line in lines:
         if "ATOM" in line:
             line = line.split()
-            pdb += [Atom(line[1],line[2], line[3], line[5], line[6], line[7], float(line[10]), float(line[11]), float(line[12]), line[13], line[14],0 )]
+            pdb += [Atom(line[1],line[2], line[3], line[5], line[6], int(line[8]), float(line[10]), float(line[11]), float(line[12]), line[13], line[14],0 )]
             count += 1
     return(pdb)
 import random
@@ -67,12 +65,37 @@ def compare_pdb_xyz(pdb1, pdb2):
                 #Write distance to attribute
                 atom1.xyz_change = xyz
 
+def find_max_res(pdb):
+    atom_p = Atom(0,0,0,0,0,0,0,0,0,0,0,0)
+    resi = []
+    resi_list_atom = []
+    resi_list_max = []
+    for atom in pdb:
+        if atom.seqid == atom_p.seqid:
+            if atom.chainid == atom_p.chainid:
+                resi += [atom]
+        #Once it finishes going though all atoms of that residue
+        else:
+            if resi != []:
+                resi_list_atom += [resi]
+                resi = []
+        #Reset so it compares with the previous
+        atom_p = atom
+    #add last residue:
+    resi_list_atom += [resi]
+    # Order the residue list by distance per residue and keep the max
+    for residue in resi_list_atom:
+        residue.sort(key=lambda x: x.xyz_change, reverse=True)
+        resi_list_max += [residue[0]]
+    return resi_list_max
+    
+
 import copy
 file1 = open("test.pdb", 'r')
 pdb1 = get_atoms_from_pdb(file1)
 pdb2 = copy.deepcopy(pdb1)
 displace_xyz(pdb2)
 compare_pdb_xyz(pdb1,pdb2)
-pdb1.sort(key=lambda x: x.xyz_change, reverse=True)
-for i in pdb1:
-    i.print_info()
+
+resi_list = find_max_res(pdb1)
+resi_list.sort(key=lambda x: x.xyz_change, reverse=True)
