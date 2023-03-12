@@ -1,5 +1,6 @@
 #!/bin/env/python
 import math
+import sys
 class Atom:
     """
     Define atom class.
@@ -55,9 +56,13 @@ def get_atoms_from_pdb(file):
     pdb = []
     count = 0
     for line in lines:
-        if "ATOM" in line:
+        if line[:4] == "ATOM":
+            print(line)
             line = line.split()
-            pdb += [Atom(line[1],line[2], line[3], line[5], line[6], int(line[8]), float(line[10]), float(line[11]), float(line[12]), line[13], line[14],0 )]
+            if len(line[4]) > 2:
+                pdb += [Atom(line[1],line[10], line[2], line[3], line[4][:1], line[4][1:], float(line[5]), float(line[6]), float(line[7]), line[8], line[9],0 )]
+            else:
+                pdb += [Atom(line[1],line[11], line[2], line[3], line[4], line[5], float(line[6]), float(line[7]), float(line[8]), line[9], line[10],0 )]
             count += 1
     return(pdb)
 import random
@@ -139,12 +144,14 @@ def find_max_res(pdb):
     return resi_list_max
     
 
-import copy
-file1 = "test.pdb"
-pdb1 = get_atoms_from_pdb(file1)
-pdb2 = copy.deepcopy(pdb1)
-displace_xyz(pdb2)
+
+pdb1 = get_atoms_from_pdb(sys.argv[1])
+pdb2 = get_atoms_from_pdb(sys.argv[2])
+
 compare_pdb_xyz(pdb1,pdb2)
 
 resi_list = find_max_res(pdb1)
 resi_list.sort(key=lambda x: x.xyz_change, reverse=True)
+print("Chain\tResidue\tDistance")
+for i in resi_list:
+    print("%s\t%s\t%s" % (i.chainid, i.seqid, i.xyz_change))
