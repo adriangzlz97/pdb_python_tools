@@ -155,4 +155,5 @@ resi_list = find_max_res(pdb1)
 resi_list.sort(key=lambda x: x.xyz_change, reverse=True)
 print("Chain\tResidue\tDistance")
 for i in resi_list:
-    print("%s\t%s\t%s" % (i.chainid, i.seqid, i.xyz_change))
+    if i.xyz_change > 0:
+        print("%s\t%s\t%s" % (i.chainid, i.seqid, i.xyz_change))
