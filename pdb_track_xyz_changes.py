@@ -98,7 +98,6 @@ def compare_pdb_xyz(pdb1, pdb2):
         for atom2 in pdb2:
             #Make sure it is the same atom being compared
             if atom1.atomid == atom2.atomid:
-                print(atom1.atomid)
                 #Get coordinates from each atom
                 x1, y1, z1 = atom1.x, atom1.y, atom1.z
                 x2, y2, z2 = atom2.x, atom2.y, atom2.z
