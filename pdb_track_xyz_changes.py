@@ -57,12 +57,12 @@ def get_atoms_from_pdb(file):
     count = 0
     for line in lines:
         if line[:4] == "ATOM":
-            print(line)
             line = line.split()
-            if len(line[4]) > 2:
-                pdb += [Atom(line[1],line[-1], line[2], line[3], line[4][:1], line[4][1:], float(line[5]), float(line[6]), float(line[7]), 0 )]
-            else:
-                pdb += [Atom(line[1],line[-1], line[2], line[3], line[4], line[5], float(line[6]), float(line[7]), float(line[8]), 0 )]
+            if line[-1] != "H":
+                if len(line[4]) > 2:
+                    pdb += [Atom(line[1],line[-1], line[2], line[3], line[4][:1], line[4][1:], float(line[5]), float(line[6]), float(line[7]), 0 )]
+                else:
+                    pdb += [Atom(line[1],line[-1], line[2], line[3], line[4], line[5], float(line[6]), float(line[7]), float(line[8]), 0 )]
             count += 1
     return(pdb)
 import random
@@ -98,6 +98,7 @@ def compare_pdb_xyz(pdb1, pdb2):
         for atom2 in pdb2:
             #Make sure it is the same atom being compared
             if atom1.atomid == atom2.atomid:
+                print(atom1.atomid)
                 #Get coordinates from each atom
                 x1, y1, z1 = atom1.x, atom1.y, atom1.z
                 x2, y2, z2 = atom2.x, atom2.y, atom2.z
