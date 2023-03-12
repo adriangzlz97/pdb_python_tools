@@ -19,7 +19,7 @@ class Atom:
     xyz_change : movement compared to another pdb
     
     """   
-    def __init__(self, atomid, element, altid, restyp, chainid, seqid, x, y, z, occ, biso, xyz_change):
+    def __init__(self, atomid, element, altid, restyp, chainid, seqid, x, y, z, xyz_change):
         self.atomid = atomid
         self.element = element
         self.altid = altid
@@ -29,15 +29,15 @@ class Atom:
         self.x = x
         self.y = y
         self.z = z
-        self.occ = occ
-        self.biso = biso
+        #self.occ = occ
+        #self.biso = biso
         self.xyz_change = xyz_change
     def print_info(self):
         """
         Prints the attributes of each atom tab separated. For testing purposes.
         
         """
-        print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (self.atomid, self.element, self.altid, self.restyp, self.chainid, self.seqid, self.x, self.y, self.z, self.occ, self.biso, self.xyz_change))
+        print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (self.atomid, self.element, self.altid, self.restyp, self.chainid, self.seqid, self.x, self.y, self.z, self.xyz_change))
 #Function to parse through the pdb file and obtain a list of atoms
 def get_atoms_from_pdb(file):
     """
@@ -60,9 +60,9 @@ def get_atoms_from_pdb(file):
             print(line)
             line = line.split()
             if len(line[4]) > 2:
-                pdb += [Atom(line[1],line[10], line[2], line[3], line[4][:1], line[4][1:], float(line[5]), float(line[6]), float(line[7]), line[8], line[9],0 )]
+                pdb += [Atom(line[1],line[-1], line[2], line[3], line[4][:1], line[4][1:], float(line[5]), float(line[6]), float(line[7]), 0 )]
             else:
-                pdb += [Atom(line[1],line[11], line[2], line[3], line[4], line[5], float(line[6]), float(line[7]), float(line[8]), line[9], line[10],0 )]
+                pdb += [Atom(line[1],line[-1], line[2], line[3], line[4], line[5], float(line[6]), float(line[7]), float(line[8]), 0 )]
             count += 1
     return(pdb)
 import random
