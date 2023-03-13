@@ -22,10 +22,10 @@ If you encounter an error about host, try:
 mpiexec -n *number of mpi processes* -host localhost python track_xyz_mpi.py *filename1 filename2* > output.txt  
 
 ## find_contacts.py usage
-This script will find all atoms between chains within a certain distance. The output will be a tabulated table following the original pdb atom order.
+This script will find all atoms between chains within a certain distance (for a given chain). The output will be a tabulated table following the original pdb atom order.
 ### Non-mpi
-python find_contacts.py *filename distance* > output.txt
+python find_contacts.py *filename distance chainid* > output.txt
 ### Mpi
-mpiexec -n *number of mpi processes* python find_contacts_mpi.py *filename1 distance* > output.txt  
+mpiexec -n *number of mpi processes* python find_contacts_mpi.py *filename1 distance chainid* > output.txt  
 If you encounter an error about host, try:  
-mpiexec -n *number of mpi processes* -host localhost python find_contacts_mpi.py *filename1 distance* > output.txt  
+mpiexec -n *number of mpi processes* -host localhost python find_contacts_mpi.py *filename1 distance chainid* > output.txt  
