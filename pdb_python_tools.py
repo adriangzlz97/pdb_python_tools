@@ -247,5 +247,4 @@ def find_contacts_mpi(pdb, df_pdb, distance):
         for i in atom_pairs:
             atom_pairs[n] = i[0]
             n += 1
-        print(atom_pairs)
         return(atom_pairs)
