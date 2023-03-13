@@ -9,14 +9,14 @@ from mpi4py import MPI
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
-
+pdb2 = get_atoms_from_pdb(sys.argv[2])
 if rank == 0:
     pdb1 = get_atoms_from_pdb(sys.argv[1])
     df_pdb1 = np.array_split(pdb1,size)
-    pdb2 = get_atoms_from_pdb(sys.argv[2])
+    
 else:
     df_pdb1 = None
-    pdb2 = get_atoms_from_pdb(sys.argv[2])
+    
 pdb1 = compare_pdb_mpi(df_pdb1,pdb2)
 if rank == 0:
     flat_pdb1 = [item for sublist in pdb1 for item in sublist]
