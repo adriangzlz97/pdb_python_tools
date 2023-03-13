@@ -10,7 +10,7 @@ Python3 and the modules sys, math, numpy (optional), mpi4py (optional)
 
 ## pdb_track_xyz_changes.py usage
 This script will find the maximum xyz coordinate change between two pdb files. The output will be a tabulated table sorted by the residues with the largest coordinate change.
-For now, the files should be in pdb format.
+For now, the files should be in pdb format and should be aligned first with some other program (e.g. ChimeraX)
 ### Non-mpi
 python pdb_track_xyz_changes.py <filename1> <filename2> > output.txt
 ### Mpi
