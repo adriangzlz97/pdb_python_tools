@@ -21,7 +21,7 @@ class Atom:
     xyz_change : movement compared to another pdb
     
     """   
-    def __init__(self, atomid, element, altid, restyp, chainid, seqid, x, y, z, xyz_change):
+    def __init__(self, atomid, element, altid, restyp, chainid, seqid, x, y, z, occ, biso, xyz_change):
         self.atomid = atomid
         self.element = element
         self.altid = altid
@@ -31,15 +31,15 @@ class Atom:
         self.x = x
         self.y = y
         self.z = z
-        #self.occ = occ
-        #self.biso = biso
+        self.occ = occ
+        self.biso = biso
         self.xyz_change = xyz_change
     def print_info(self):
         """
         Prints the attributes of each atom tab separated. For testing purposes.
         
         """
-        print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (self.atomid, self.element, self.altid, self.restyp, self.chainid, self.seqid, self.x, self.y, self.z, self.xyz_change))
+        print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (self.atomid, self.element, self.altid, self.restyp, self.chainid, self.seqid, self.x, self.y, self.z, self.occ, self.biso, self.xyz_change))
 #Function to parse through the pdb file and obtain a list of atoms
 def get_atoms_from_pdb(file, hetatm):
     """
@@ -58,26 +58,14 @@ def get_atoms_from_pdb(file, hetatm):
     pdb = []
     for line in lines:
         if line[:4] == "ATOM":
-            line = line.split()
             if line[-1] != "H":
-                if len(line[4]) > 2:
-                    pdb += [Atom(line[1],line[-1], line[2], line[3], line[4][:1], line[4][1:], float(line[5]), float(line[6]), float(line[7]), 0 )]
-                else:
-                    pdb += [Atom(line[1],line[-1], line[2], line[3], line[4], line[5], float(line[6]), float(line[7]), float(line[8]), 0 )]
+                pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), line[55-60], line[60-67], 0 )]
         if hetatm == "-HETATM":
             if line[:6] == "HETATM":
-                line = line.split()
                 if line[-1] != "H":
-                    if len(line[0]) >= 7:
-                        if len(line[3]) > 2:
-                            pdb += [Atom(line[0][6:],line[-1], line[1], line[2], line[3][:1], line[3][1:], float(line[4]), float(line[5]), float(line[6]), 0 )]
-                        elif len(line[3]) <=2:
-                            pdb += [Atom(line[0][6:],line[-1], line[1], line[2], line[3], line[4], float(line[5]), float(line[6]), float(line[7]), 0 )]
-                    else:
-                        if len(line[4]) > 2:
-                            pdb += [Atom(line[1],line[-1], line[2], line[3], line[4][:1], line[4][1:], float(line[5]), float(line[6]), float(line[7]), 0 )]
-                        elif len(line[4]) <=2:
-                            pdb += [Atom(line[1],line[-1], line[2], line[3], line[4], line[5], float(line[6]), float(line[7]), float(line[8]), 0 )]
+                    pdb += [Atom(line[6:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), line[55-60], line[60-67], 0 )]
+        else:
+            continue
     return(pdb)
 import random
 def displace_xyz(pdb):
