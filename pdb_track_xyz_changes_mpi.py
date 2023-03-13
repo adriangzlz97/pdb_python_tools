@@ -198,7 +198,7 @@ if rank == 0:
     flat_pdb1 = [item for sublist in pdb1 for item in sublist]
     resi_list = find_max_res(flat_pdb1)
     resi_list.sort(key=lambda x: x.xyz_change, reverse=True)
-    print("Chain\tResidue\tDistance")
+    print("Chain\tResidue\tResidue name\tDistance")
     for i in resi_list:
         if i.xyz_change > 0:
-            print("%s\t%s\t%s" % (i.chainid, i.seqid, i.xyz_change))
+            print("%s\t%s\t%s\t%s" % (i.chainid, i.seqid, i.restyp, i.xyz_change))
