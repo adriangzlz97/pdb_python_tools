@@ -4,11 +4,11 @@ from pdb_python_tools import Atom
 from pdb_python_tools import get_atoms_from_pdb
 from pdb_python_tools import compare_pdb_xyz
 from pdb_python_tools import find_max_res
-
-
-
-pdb1 = get_atoms_from_pdb(sys.argv[1])
-pdb2 = get_atoms_from_pdb(sys.argv[2])
+hetatm = 0
+if len(sys.argv) >= 4:
+    hetatm = sys.argv[3]
+pdb1 = get_atoms_from_pdb(sys.argv[1], hetatm)
+pdb2 = get_atoms_from_pdb(sys.argv[2], hetatm)
 
 compare_pdb_xyz(pdb1,pdb2)
 

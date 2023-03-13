@@ -10,7 +10,10 @@ from pdb_python_tools import find_contacts_mpi
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
-pdb = get_atoms_from_pdb(sys.argv[1])
+hetatm = 0
+if len(sys.argv) >= 4:
+    hetatm = sys.argv[3]
+pdb = get_atoms_from_pdb(sys.argv[1],hetatm)
 if rank == 0:
     df_pdb = np.array_split(pdb,size)
     

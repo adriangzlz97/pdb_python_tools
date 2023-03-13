@@ -5,8 +5,10 @@ from pdb_python_tools import get_atoms_from_pdb
 import math
 from pdb_python_tools import find_contacts
 
-
-pdb = get_atoms_from_pdb(sys.argv[1])
+hetatm = 0
+if len(sys.argv) >= 4:
+    hetatm = sys.argv[3]
+pdb = get_atoms_from_pdb(sys.argv[1], hetatm)
 distance = float(sys.argv[2])
 atom_pairs = find_contacts(pdb, distance)
 print("Chain1\tResidue1\tResidue1 number\tAtom1\tChain2\tResidue2\tResidue2 number\tAtom2\tDistance")

@@ -39,9 +39,9 @@ class Atom:
         Prints the attributes of each atom tab separated. For testing purposes.
         
         """
-        print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (self.atomid, self.element, self.altid, self.restyp, self.chainid, self.seqid, self.x, self.y, self.z, self.xyz_change))
+        print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (self.atomid, self.element, self.altid, self.restyp, self.chainid, self.seqid, self.x, self.y, self.z, self.xyz_change))
 #Function to parse through the pdb file and obtain a list of atoms
-def get_atoms_from_pdb(file):
+def get_atoms_from_pdb(file, hetatm):
     """
     Parses through a pdb file and generates a list of atoms.
 
@@ -56,7 +56,6 @@ def get_atoms_from_pdb(file):
     file = open(file, 'r')
     lines = file.readlines()
     pdb = []
-    count = 0
     for line in lines:
         if line[:4] == "ATOM":
             line = line.split()
@@ -65,7 +64,20 @@ def get_atoms_from_pdb(file):
                     pdb += [Atom(line[1],line[-1], line[2], line[3], line[4][:1], line[4][1:], float(line[5]), float(line[6]), float(line[7]), 0 )]
                 else:
                     pdb += [Atom(line[1],line[-1], line[2], line[3], line[4], line[5], float(line[6]), float(line[7]), float(line[8]), 0 )]
-            count += 1
+        if hetatm == "-HETATM":
+            if line[:6] == "HETATM":
+                line = line.split()
+                if line[-1] != "H":
+                    if len(line[0]) >= 7:
+                        if len(line[3]) > 2:
+                            pdb += [Atom(line[0][6:],line[-1], line[1], line[2], line[3][:1], line[3][1:], float(line[4]), float(line[5]), float(line[6]), 0 )]
+                        elif len(line[3]) <=2:
+                            pdb += [Atom(line[0][6:],line[-1], line[1], line[2], line[3], line[4], float(line[5]), float(line[6]), float(line[7]), 0 )]
+                    else:
+                        if len(line[4]) > 2:
+                            pdb += [Atom(line[1],line[-1], line[2], line[3], line[4][:1], line[4][1:], float(line[5]), float(line[6]), float(line[7]), 0 )]
+                        elif len(line[4]) <=2:
+                            pdb += [Atom(line[1],line[-1], line[2], line[3], line[4], line[5], float(line[6]), float(line[7]), float(line[8]), 0 )]
     return(pdb)
 import random
 def displace_xyz(pdb):

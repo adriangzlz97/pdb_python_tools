@@ -9,9 +9,12 @@ from mpi4py import MPI
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
-pdb2 = get_atoms_from_pdb(sys.argv[2])
+hetatm = 0
+if len(sys.argv) >= 4:
+    hetatm = sys.argv[3]
+pdb2 = get_atoms_from_pdb(sys.argv[2], hetatm)
 if rank == 0:
-    pdb1 = get_atoms_from_pdb(sys.argv[1])
+    pdb1 = get_atoms_from_pdb(sys.argv[1], hetatm)
     df_pdb1 = np.array_split(pdb1,size)
     
 else:
