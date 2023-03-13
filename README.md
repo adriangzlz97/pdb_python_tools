@@ -14,6 +14,6 @@ For now, the files should be in pdb format and should be aligned first with some
 ### Non-mpi
 python track_xyz.py *filename1 filename2* > output.txt
 ### Mpi
-mpiexec -n <number of mpi processes> python track_xyz.py *filename1 filename2* > output.txt
+mpiexec -n <number of mpi processes> python track_xyz.py *filename1 filename2* > output.txt  
 If you encounter an error about host, try:  
 mpiexec -n <number of mpi processes> -host localhost python track_xyz_mpi.py *filename1 filename2* > output.txt
