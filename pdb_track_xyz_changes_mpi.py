@@ -1,6 +1,7 @@
 #!/bin/env/python
 import math
 import sys
+import numpy as np
 class Atom:
     """
     Define atom class.
@@ -145,26 +146,41 @@ def find_max_res(pdb):
     return resi_list_max
 
 def compare_pdb_mpi(pdb1,pdb2):
+    """
+    Compares two lists of Atoms (class). Implements mpi.
+
+    Inputs
+    ------
+    pdb1, pdb2 : List of Atoms (class)
+
+    Returns
+    -------
+    Modifies self.xyz_change from pdb1 atoms (class) based on the
+    x, y, z change between pdb1 and pdb2.
+
+    """
     # Scatter the lists
     sc_pdb1 = comm.scatter(pdb1, root=0)
     # Iterate through the part of the lists assigned to each rank
     for i in zip(sc_pdb1):
         for atom1 in i:
-            #Make sure it is the same atom being compared
             for atom2 in pdb2:
-                if atom1.atomid == atom2.atomid:
-                    #Get coordinates from each atom
-                    x1, y1, z1 = atom1.x, atom1.y, atom1.z
-                    x2, y2, z2 = atom2.x, atom2.y, atom2.z
-                    #Calculate vector distance
-                    xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
-                    xyz = math.sqrt(xyz)
-                    #Write distance to attribute
-                    atom1.xyz_change = xyz
+                #Make sure it is the same atom being compared
+                if atom1.chainid == atom2.chainid:
+                    if atom1.seqid == atom2.seqid:
+                        if atom1.altid == atom2.altid:
+                            #Get coordinates from each atom
+                            x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                            x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                            #Calculate vector distance
+                            xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                            xyz = math.sqrt(xyz)
+                            #Write distance to attribute
+                            atom1.xyz_change = xyz
     # Gather results on rank 0
     pdb1 = comm.gather(sc_pdb1, root=0)
     return pdb1
-import numpy as np
+
 from mpi4py import MPI
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
