@@ -11,16 +11,17 @@ comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 hetatm = 0
-if len(sys.argv) >= 4:
-    hetatm = sys.argv[3]
+if len(sys.argv) >= 5:
+    hetatm = sys.argv[4]
 pdb = get_atoms_from_pdb(sys.argv[1],hetatm)
+chain = sys.argv[3]
 if rank == 0:
     df_pdb = np.array_split(pdb,size)
     
 else:
     df_pdb = None
 distance = float(sys.argv[2])
-atom_pairs = find_contacts_mpi(pdb, df_pdb, distance)
+atom_pairs = find_contacts_mpi(pdb, df_pdb, distance, chain)
 if rank == 0:
     print("Chain1\tResidue1\tResidue1 number\tAtom1\tChain2\tResidue2\tResidue2 number\tAtom2\tDistance")
     for i in atom_pairs:
