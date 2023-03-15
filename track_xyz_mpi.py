@@ -10,11 +10,15 @@ comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 hetatm = 0
-if len(sys.argv) >= 4:
-    hetatm = sys.argv[3]
-pdb2 = get_atoms_from_pdb(sys.argv[2], hetatm)
+hydrogens = 0
+for i in sys.argv:
+    if i == "-HETATM":
+        hetatm = i
+    if i == "-ignore-hydrogens-false":
+        hydrogens = i
+pdb2 = get_atoms_from_pdb(sys.argv[2], hetatm, hydrogens)
 if rank == 0:
-    pdb1 = get_atoms_from_pdb(sys.argv[1], hetatm)
+    pdb1 = get_atoms_from_pdb(sys.argv[1], hetatm, hydrogens)
     df_pdb1 = np.array_split(pdb1,size)
     
 else:

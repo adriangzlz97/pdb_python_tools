@@ -41,7 +41,7 @@ class Atom:
         """
         print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (self.atomid, self.element, self.altid, self.restyp, self.chainid, self.seqid, self.x, self.y, self.z, self.occ, self.biso, self.xyz_change))
 #Function to parse through the pdb file and obtain a list of atoms
-def get_atoms_from_pdb(file, hetatm):
+def get_atoms_from_pdb(file, hetatm, hydrogens):
     """
     Parses through a pdb file and generates a list of atoms.
 
@@ -58,12 +58,16 @@ def get_atoms_from_pdb(file, hetatm):
     pdb = []
     for line in lines:
         if line[:4] == "ATOM":
-            if line[-2] != "H":
+            if line[-2] != "H" and hydrogens == "-ignore-hydrogens-false":
                 pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), line[55-60], line[60-67], 0 )]
+            else:
+                pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), line[55-60], line[60-67], 0 )]       
         if hetatm == "-HETATM":
             if line[:6] == "HETATM":
-                if line[-2] != "H":
+                if line[-2] != "H" and hydrogens == "-ignore-hydrogens-false":
                     pdb += [Atom(line[6:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), line[55-60], line[60-67], 0 )]
+                else:
+                    pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), line[55-60], line[60-67], 0 )]
         else:
             continue
     return(pdb)
