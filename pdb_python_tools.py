@@ -128,7 +128,7 @@ def find_max_res(pdb):
     resi_list_max : list of Atoms from pdb with the largest xyz_change per residue.
 
     """
-    atom_p = Atom(0,0,0,0,0,0,0,0,0,0)
+    atom_p = Atom(0,0,0,0,0,0,0,0,0,0,0,0)
     resi = []
     resi_list_atom = []
     resi_list_max = []
