@@ -2,6 +2,7 @@
 import sys
 from pdb_python_tools import Atom
 from pdb_python_tools import get_atoms_from_pdb
+from pdb_python_tools import get_atoms_from_cif
 import math
 from pdb_python_tools import find_contacts
 
@@ -13,7 +14,10 @@ for i in sys.argv:
     if i == "-ignore-hydrogens-false":
         hydrogens = i
 chain = sys.argv[3]
-pdb = get_atoms_from_pdb(sys.argv[1], hetatm, hydrogens)
+if ".pdb" in sys.argv[1]:
+    pdb = get_atoms_from_pdb(sys.argv[1], hetatm, hydrogens)
+elif ".cif" in sys.argv[1]:
+    pdb = get_atoms_from_cif(sys.argv[1], hetatm, hydrogens)
 distance = float(sys.argv[2])
 atom_pairs = find_contacts(pdb, distance, chain)
 print("Chain1\tResidue1\tResidue1 number\tAtom1\tChain2\tResidue2\tResidue2 number\tAtom2\tDistance")

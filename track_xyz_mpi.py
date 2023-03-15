@@ -2,6 +2,7 @@
 import sys
 from pdb_python_tools import Atom
 from pdb_python_tools import get_atoms_from_pdb
+from pdb_python_tools import get_atoms_from_cif
 from pdb_python_tools import compare_pdb_mpi
 from pdb_python_tools import find_max_res
 import numpy as np
@@ -16,9 +17,15 @@ for i in sys.argv:
         hetatm = i
     if i == "-ignore-hydrogens-false":
         hydrogens = i
-pdb2 = get_atoms_from_pdb(sys.argv[2], hetatm, hydrogens)
+if ".pdb" in sys.argv[2]:
+    pdb2 = get_atoms_from_pdb(sys.argv[1], hetatm, hydrogens)
+elif ".cif" in sys.argv[2]:
+    pdb2 = get_atoms_from_cif(sys.argv[1], hetatm, hydrogens)
 if rank == 0:
-    pdb1 = get_atoms_from_pdb(sys.argv[1], hetatm, hydrogens)
+    if ".pdb" in sys.argv[1]:
+        pdb1 = get_atoms_from_pdb(sys.argv[1], hetatm, hydrogens)
+    elif ".cif" in sys.argv[1]:
+        pdb1 = get_atoms_from_cif(sys.argv[1], hetatm, hydrogens)
     df_pdb1 = np.array_split(pdb1,size)
     
 else:

@@ -2,6 +2,7 @@
 import sys
 from pdb_python_tools import Atom
 from pdb_python_tools import get_atoms_from_pdb
+from pdb_python_tools import get_atoms_from_cif
 import math
 import numpy as np
 from mpi4py import MPI
@@ -17,7 +18,10 @@ for i in sys.argv:
         hetatm = i
     if i == "-ignore-hydrogens-false":
         hydrogens = i
-pdb = get_atoms_from_pdb(sys.argv[1],hetatm,hydrogens)
+if ".pdb" in sys.argv[1]:
+    pdb = get_atoms_from_pdb(sys.argv[1], hetatm, hydrogens)
+elif ".cif" in sys.argv[1]:
+    pdb = get_atoms_from_cif(sys.argv[1], hetatm, hydrogens)
 chain = sys.argv[3]
 if rank == 0:
     df_pdb = np.array_split(pdb,size)

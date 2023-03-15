@@ -59,15 +59,15 @@ def get_atoms_from_pdb(file, hetatm, hydrogens):
     for line in lines:
         if line[:4] == "ATOM":
             if line[-2] != "H":
-                pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), line[55-60], line[60-67], 0 )]
+                pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
             elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
-                pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), line[55-60], line[60-67], 0 )]       
+                pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
         if hetatm == "-HETATM":
             if line[:6] == "HETATM":
                 if line[-2] != "H":
-                    pdb += [Atom(line[6:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), line[55-60], line[60-67], 0 )]
+                    pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
                 elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
-                    pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), line[55-60], line[60-67], 0 )]
+                    pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
         else:
             continue
     return(pdb)
@@ -256,3 +256,36 @@ def find_contacts_mpi(pdb, df_pdb, distance, chain):
                 if [[i[1].atomid,i[0].atomid,i[2]]] == [[j[0].atomid,j[1].atomid,j[2]]]:
                             flat_atom_pairs.remove(i)
         return(flat_atom_pairs)
+    
+def get_atoms_from_cif(file, hetatm, hydrogens):
+    """
+    Parses through a cif file and generates a list of atoms.
+
+    Inputs
+    ------
+    String indicating the pdb file to parse.
+
+    Returns
+    -------
+    List of atoms as Atom class.
+    """
+    file = open(file, 'r')
+    lines = file.readlines()
+    cif = []
+    for line in lines:
+        if line[:4] == "ATOM":
+            line = line.split()
+            if line[2] != "H":
+                cif += [Atom(line[1], line[2], line[3], line[5], line[6], line[8], float(line[10]), float(line[11]), float(line[12]), float(line[13]), float(line[14]), 0)]
+            elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                cif += [Atom(line[1], line[2], line[3], line[5], line[6], line[8], float(line[10]), float(line[11]), float(line[12]), float(line[13]), float(line[14]), 0)]
+        if hetatm == "-HETATM":
+            if line[:6] == "HETATM":
+                line = line.split()
+                if line[2] != "H":
+                    cif += [Atom(line[1], line[2], line[3], line[5], line[6], line[8], float(line[10]), float(line[11]), float(line[12]), float(line[13]), float(line[14]), 0)]
+                elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    cif += [Atom(line[1], line[2], line[3], line[5], line[6], line[8], float(line[10]), float(line[11]), float(line[12]), float(line[13]), float(line[14]), 0)]
+        else:
+            continue
+    return(cif)
