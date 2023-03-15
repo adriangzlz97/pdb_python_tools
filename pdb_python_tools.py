@@ -272,20 +272,46 @@ def get_atoms_from_cif(file, hetatm, hydrogens):
     file = open(file, 'r')
     lines = file.readlines()
     cif = []
+    count= -1
     for line in lines:
+        count += 1
+        if "loop_" in line:
+            count = -1
+        if "_atom_site.id" in line:
+            atomid = count
+        if "_atom_site.type_symbol" in line:
+            element = count
+        if "_atom_site.label_atom_id" in line:
+            altid = count
+        if "_atom_site.label_comp_id" in line:
+            restyp = count
+        if "_atom_site.label_asym_id" in line:
+            chainid = count
+        if "_atom_site.label_seq_id" in line:
+            seqid = count
+        if "_atom_site.Cartn_x" in line:
+            x = count
+        if "_atom_site.Cartn_y" in line:
+            y = count
+        if "_atom_site.Cartn_z" in line:
+            z = count
+        if "_atom_site.occupancy" in line:
+            occ = count
+        if "_atom_site.B_iso" in line:
+            biso = count
         if line[:4] == "ATOM":
             line = line.split()
             if line[2] != "H":
-                cif += [Atom(line[1], line[2], line[3], line[5], line[6], line[8], float(line[10]), float(line[11]), float(line[12]), float(line[13]), float(line[14]), 0)]
+                cif += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
             elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
-                cif += [Atom(line[1], line[2], line[3], line[5], line[6], line[8], float(line[10]), float(line[11]), float(line[12]), float(line[13]), float(line[14]), 0)]
+                cif += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
         if hetatm == "-HETATM":
             if line[:6] == "HETATM":
                 line = line.split()
                 if line[2] != "H":
-                    cif += [Atom(line[1], line[2], line[3], line[5], line[6], line[8], float(line[10]), float(line[11]), float(line[12]), float(line[13]), float(line[14]), 0)]
+                    cif += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
                 elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
-                    cif += [Atom(line[1], line[2], line[3], line[5], line[6], line[8], float(line[10]), float(line[11]), float(line[12]), float(line[13]), float(line[14]), 0)]
+                    cif += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
         else:
             continue
     return(cif)
