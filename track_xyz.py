@@ -27,8 +27,13 @@ elif ".cif" in sys.argv[2]:
 # Compare both pdbs 
 compare_pdb_xyz(pdb1,pdb2)
 
+# Find maximum xyz change per residue and produce a list of those atoms
 resi_list = find_max_res(pdb1)
+
+# Sort by the xyz change
 resi_list.sort(key=lambda x: x.xyz_change, reverse=True)
+
+# Print table
 print("Chain\tResidue\tResidue name\tDistance")
 for i in resi_list:
     if i.xyz_change > 0.01:
