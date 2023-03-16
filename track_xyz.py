@@ -29,5 +29,5 @@ resi_list = find_max_res(pdb1)
 resi_list.sort(key=lambda x: x.xyz_change, reverse=True)
 print("Chain\tResidue\tResidue name\tDistance")
 for i in resi_list:
-    if i.xyz_change > 0.0009:
+    if i.xyz_change > 0.01:
         print("%s\t%s\t%s\t%s" % (i.chainid, i.seqid, i.restyp, i.xyz_change))
