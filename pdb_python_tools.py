@@ -148,7 +148,8 @@ def find_max_res(pdb):
     # Order the residue list by distance per residue and keep the max
     for residue in resi_list_atom:
         residue.sort(key=lambda x: x.xyz_change, reverse=True)
-        resi_list_max += [residue[0]]
+        if len(residue) > 0:
+            resi_list_max += [residue[0]]
     return resi_list_max
 
 def compare_pdb_mpi(pdb1,pdb2):
