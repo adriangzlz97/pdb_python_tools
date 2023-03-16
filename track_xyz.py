@@ -7,13 +7,13 @@ from pdb_python_tools import compare_pdb_xyz
 from pdb_python_tools import find_max_res
 hetatm = 0
 hydrogens = 0
+# Check for flags
 for i in sys.argv:
     if i == "-HETATM":
         hetatm = i
     if i == "-ignore-hydrogens-false":
         hydrogens = i
-if len(sys.argv) >= 4:
-    hetatm = sys.argv[3]
+
 if ".pdb" in sys.argv[1]:
     pdb1 = get_atoms_from_pdb(sys.argv[2], hetatm, hydrogens)
 elif ".cif" in sys.argv[1]:
