@@ -8,28 +8,42 @@ import numpy as np
 from mpi4py import MPI
 from pdb_python_tools import find_contacts_mpi
 
+# Set up MPI
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 hetatm = 0
 hydrogens = 0
+
+# Check for flags
 for i in sys.argv:
     if i == "-HETATM":
         hetatm = i
     if i == "-ignore-hydrogens-false":
         hydrogens = i
+
+# Check format and parse with appropriate function
 if ".pdb" in sys.argv[1]:
     pdb = get_atoms_from_pdb(sys.argv[1], hetatm, hydrogens)
 elif ".cif" in sys.argv[1]:
     pdb = get_atoms_from_cif(sys.argv[1], hetatm, hydrogens)
+
+# Gather chainid
 chain = sys.argv[3]
+
+# Distribute over mpi processes
 if rank == 0:
-    df_pdb = np.array_split(pdb,size)
-    
+    df_pdb = np.array_split(pdb,size)  
 else:
     df_pdb = None
+
+# Gather max distance to consider
 distance = float(sys.argv[2])
+
+# Find the contacts within that distance through mpi
 atom_pairs = find_contacts_mpi(pdb, df_pdb, distance, chain)
+
+# Print table on root
 if rank == 0:
     print("Chain1\tResidue1\tResidue1 number\tAtom1\tChain2\tResidue2\tResidue2 number\tAtom2\tDistance")
     for i in atom_pairs:
