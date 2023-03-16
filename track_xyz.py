@@ -14,15 +14,17 @@ for i in sys.argv:
     if i == "-ignore-hydrogens-false":
         hydrogens = i
 
+# Check format and parse with appropriate function
 if ".pdb" in sys.argv[1]:
-    pdb1 = get_atoms_from_pdb(sys.argv[2], hetatm, hydrogens)
+    pdb1 = get_atoms_from_pdb(sys.argv[1], hetatm, hydrogens)
 elif ".cif" in sys.argv[1]:
-    pdb1 = get_atoms_from_cif(sys.argv[2], hetatm, hydrogens)
+    pdb1 = get_atoms_from_cif(sys.argv[1], hetatm, hydrogens)
 if ".pdb" in sys.argv[2]:
-    pdb2 = get_atoms_from_pdb(sys.argv[1], hetatm, hydrogens)
+    pdb2 = get_atoms_from_pdb(sys.argv[2], hetatm, hydrogens)
 elif ".cif" in sys.argv[2]:
-    pdb2 = get_atoms_from_cif(sys.argv[1], hetatm, hydrogens)
+    pdb2 = get_atoms_from_cif(sys.argv[2], hetatm, hydrogens)
 
+# Compare both pdbs 
 compare_pdb_xyz(pdb1,pdb2)
 
 resi_list = find_max_res(pdb1)
