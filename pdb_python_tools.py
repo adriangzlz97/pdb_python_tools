@@ -53,21 +53,30 @@ def get_atoms_from_pdb(file, hetatm, hydrogens):
     -------
     List of atoms as Atom class.
     """
+    # Read the file per line
     file = open(file, 'r')
     lines = file.readlines()
     pdb = []
+
+    # Iterate through the lines
     for line in lines:
+        # Check that the line has atom information
         if line[:4] == "ATOM":
+            # Ignore hydrogens by default
             if line[-2] != "H":
+                # Add atoms to list by getting the attributes through indexing the line
                 pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
+            # Gather hydrogens if -ignore-hydrogens-false flag is present
             elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
                 pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
+        # If the -HETATM flag is present, do the same for HETATMs
         if hetatm == "-HETATM":
             if line[:6] == "HETATM":
                 if line[-2] != "H":
                     pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
                 elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
                     pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
+        # Ignore lines that do not include the atom information
         else:
             continue
     return(pdb)
@@ -100,19 +109,21 @@ def compare_pdb_xyz(pdb1, pdb2):
     x, y, z change between pdb1 and pdb2.
 
     """
+    # Iterate through the first atom list
     for atom1 in pdb1:
+        # Iterate through the second atom list
         for atom2 in pdb2:
-            #Make sure it is the same atom being compared
+            # Make sure it is the same atom being compared (same chain, seq number and atom name)
             if atom1.chainid == atom2.chainid:
                 if atom1.seqid == atom2.seqid:
                     if atom1.altid == atom2.altid:
-                        #Get coordinates from each atom
+                        # Get coordinates from each atom
                         x1, y1, z1 = atom1.x, atom1.y, atom1.z
                         x2, y2, z2 = atom2.x, atom2.y, atom2.z
-                        #Calculate vector distance
+                        # Calculate vector distance
                         xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
                         xyz = math.sqrt(xyz)
-                        #Write distance to attribute
+                        # Write distance to attribute on the first list
                         atom1.xyz_change = xyz
 
 def find_max_res(pdb):
@@ -128,22 +139,29 @@ def find_max_res(pdb):
     resi_list_max : list of Atoms from pdb with the largest xyz_change per residue.
 
     """
+    # Prepare dummy variables
     atom_p = Atom(0,0,0,0,0,0,0,0,0,0,0,0)
     resi = []
     resi_list_atom = []
     resi_list_max = []
+    # Iterate through the atoms in the pdb list
     for atom in pdb:
+        # Check that the atom belongs to the same residue as the one before
         if atom.seqid == atom_p.seqid:
             if atom.chainid == atom_p.chainid:
+                #Build the residue list with that atom
                 resi += [atom]
-        #Once it finishes going though all atoms of that residue
+        # Once it finishes going though all atoms of that residue (it considers that they are correctly ordered)
         else:
+            # Double check that it is not empty
             if resi != []:
+                # Build a list with the residues
                 resi_list_atom += [resi]
+                # Start a new residue
                 resi = []
-        #Reset so it compares with the previous
+        # Reset so it compares with the previous
         atom_p = atom
-    #add last residue:
+    # add last residue:
     resi_list_atom += [resi]
     # Order the residue list by distance per residue and keep the max
     for residue in resi_list_atom:
@@ -166,7 +184,7 @@ def compare_pdb_mpi(pdb1,pdb2):
     x, y, z change between pdb1 and pdb2.
 
     """
-    # MPI
+    # Set up MPI
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -175,9 +193,9 @@ def compare_pdb_mpi(pdb1,pdb2):
     # Iterate through the part of the lists assigned to each rank
     for i in zip(sc_pdb1):
         for atom1 in i:
-            #Slowest part - Possibility for improving performance
+            # Slowest part - Possibility for improving performance
             for atom2 in pdb2:
-                #Make sure it is the same atom being compared
+                # Make sure it is the same atom being compared
                 if atom1.chainid == atom2.chainid:
                     if atom1.seqid == atom2.seqid:
                         if atom1.altid == atom2.altid:
@@ -198,24 +216,24 @@ def find_contacts(pdb, distance, chain):
     Finds all atoms from different chains within a specific distance and returns a list of pairs.
     """
     atom_pairs = []
+    # Iterate through atoms
     for atom1 in pdb:
+        # Only consider atoms for a given chain
         if atom1.chainid == chain:
-        # Slowest part - possibility for improvement
+        # Compare with all other atoms. Slowest part - possibility for improvement
             for atom2 in pdb:
+                # Consider only atoms from different chain for the comparison
                 if atom1.chainid != atom2.chainid:
-                    if abs(atom1.x-atom2.x) > 5 or abs(atom1.y-atom2.y) > 5 or abs(atom1.z-atom2.z) > 5:
-                        continue
-                    else:
-                        #Get coordinates from each atom
-                        x1, y1, z1 = atom1.x, atom1.y, atom1.z
-                        x2, y2, z2 = atom2.x, atom2.y, atom2.z
-                        #Calculate vector distance
-                        xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
-                        xyz = math.sqrt(xyz)
-                        if xyz <= distance:
-                            #Ignore duplicate
-                            if [atom2,atom1,xyz] not in atom_pairs:
-                                atom_pairs += [[atom1,atom2,xyz]]
+                    # Get coordinates from each atom
+                    x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                    x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                    # Calculate vector distance
+                    xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                    xyz = math.sqrt(xyz)
+                    if xyz <= distance:
+                        # Ignore duplicate (the opposite pair, reversed)
+                        if [atom2,atom1,xyz] not in atom_pairs:
+                            atom_pairs += [[atom1,atom2,xyz]]
     return(atom_pairs)
 
 def find_contacts_mpi(pdb, df_pdb, distance, chain):
@@ -223,7 +241,7 @@ def find_contacts_mpi(pdb, df_pdb, distance, chain):
     Finds all atoms from different chains within a specific distance and returns a list of pairs.
     """
     atom_pairs = []
-    # MPI
+    # Set up MPI
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -231,7 +249,9 @@ def find_contacts_mpi(pdb, df_pdb, distance, chain):
     sc_pdb = comm.scatter(df_pdb, root=0)
     # Iterate through the part of the lists assigned to each rank
     for atom1 in pdb:
+        # Only consider atoms for a given chain
         if atom1.chainid == chain:
+            # Compare with all other atoms. Distributed over mpi. Slowest part - possibility for improvement
             for i in zip(sc_pdb):
                 for atom2 in i:
                     if atom1.chainid != atom2.chainid:
@@ -249,9 +269,9 @@ def find_contacts_mpi(pdb, df_pdb, distance, chain):
     if rank == 0:
         while [] in atom_pairs:
                 atom_pairs.remove([])
-        #Clean list
+        # Clean list
         flat_atom_pairs = [item for sublist in atom_pairs for item in sublist]
-        #Remove duplicates
+        # Remove duplicates. The opposite pair, which is reversed.
         for i in flat_atom_pairs:
             for j in flat_atom_pairs:
                 if [[i[1].atomid,i[0].atomid,i[2]]] == [[j[0].atomid,j[1].atomid,j[2]]]:
@@ -270,14 +290,21 @@ def get_atoms_from_cif(file, hetatm, hydrogens):
     -------
     List of atoms as Atom class.
     """
+    # Read file by lines
     file = open(file, 'r')
     lines = file.readlines()
+    # Set up dummy variable
     cif = []
+    # Set up count to get the column order
     count= -1
+    # Iterate through the lines
     for line in lines:
+        # Add counts each line
         count += 1
+        # Reset counts at the start of a loop_, to get the column order
         if "loop_" in line:
             count = -1
+        # Get the order for each attribute
         if "_atom_site.id" in line:
             atomid = count
         if "_atom_site.type_symbol" in line:
@@ -300,12 +327,15 @@ def get_atoms_from_cif(file, hetatm, hydrogens):
             occ = count
         if "_atom_site.B_iso" in line:
             biso = count
+        # Get atom attributes with the obtained order
         if line[:4] == "ATOM":
             line = line.split()
             if line[2] != "H":
                 cif += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
+            # Get hydrogens if flag is present
             elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
                 cif += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
+        # Do the same for HETATM if flag is present
         if hetatm == "-HETATM":
             if line[:6] == "HETATM":
                 line = line.split()
