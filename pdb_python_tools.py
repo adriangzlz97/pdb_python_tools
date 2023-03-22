@@ -315,7 +315,11 @@ def get_atoms_from_cif(file, hetatm, hydrogens):
             restyp = count
         if "_atom_site.auth_asym_id" in line:
             chainid = count
+        elif "_atom_site.label_asym_id" in line:
+            chainid = count
         if "_atom_site.auth_seq_id" in line:
+            seqid = count
+        elif "_atom_site.label_seq_id" in line:
             seqid = count
         if "_atom_site.Cartn_x" in line:
             x = count
