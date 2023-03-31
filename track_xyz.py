@@ -34,10 +34,7 @@ resi_list = find_max_res(pdb1)
 resi_list.sort(key=lambda x: x.xyz_change, reverse=True)
 
 # Print table
-print("Chain\tResidue\tResidue name\tDistance\tAtom\tNote")
+print("Chain\tResidue\tResidue name\tDistance\tAtom")
 for i in resi_list:
     if i.xyz_change > 0.01:
-        if (i.restyp == "TYR" or i.restyp == "PHE") and i.xyz_change > 2.4 and i.xyz_change <2.5 and ("CE" in i.altid or "CD" in i.altid):
-            print("%s\t%s\t%s\t%s\t%s\tProbably a flip" % (i.chainid, i.seqid, i.restyp, i.xyz_change, i.altid))
-        else:
-            print("%s\t%s\t%s\t%s\t%s" % (i.chainid, i.seqid, i.restyp, i.xyz_change, i.altid))
+        print("%s\t%s\t%s\t%s\t%s" % (i.chainid, i.seqid, i.restyp, i.xyz_change, i.altid))

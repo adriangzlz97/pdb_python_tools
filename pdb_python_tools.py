@@ -116,7 +116,7 @@ def compare_pdb_xyz(pdb1, pdb2):
             # Make sure it is the same atom being compared (same chain, seq number and atom name)
             if atom1.chainid == atom2.chainid:
                 if atom1.seqid == atom2.seqid:
-                    if atom1.altid == atom2.altid:
+                    if atom1.altid == atom2.altid and isinstance(atom1.xyz_change, int):
                         # Get coordinates from each atom
                         x1, y1, z1 = atom1.x, atom1.y, atom1.z
                         x2, y2, z2 = atom2.x, atom2.y, atom2.z
@@ -125,6 +125,15 @@ def compare_pdb_xyz(pdb1, pdb2):
                         xyz = math.sqrt(xyz)
                         # Write distance to attribute on the first list
                         atom1.xyz_change = xyz
+                    if atom1.restyp == "TYR" or atom1.restyp == "PHE":
+                            if "CE" in atom1.altid or "CD" in atom1.altid:
+                                if "CE" in atom2.altid or "CD" in atom2.altid:
+                                    x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                                    x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                                    xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                                    xyz = math.sqrt(xyz)
+                                    if xyz < atom1.xyz_change or isinstance(atom1.xyz_change, int):
+                                        atom1.xyz_change = xyz
 
 def find_max_res(pdb):
     """
@@ -198,7 +207,7 @@ def compare_pdb_mpi(pdb1,pdb2):
                 # Make sure it is the same atom being compared
                 if atom1.chainid == atom2.chainid:
                     if atom1.seqid == atom2.seqid:
-                        if atom1.altid == atom2.altid:
+                        if atom1.altid == atom2.altid and isinstance(atom1.xyz_change, int):
                             #Get coordinates from each atom
                             x1, y1, z1 = atom1.x, atom1.y, atom1.z
                             x2, y2, z2 = atom2.x, atom2.y, atom2.z
@@ -207,6 +216,16 @@ def compare_pdb_mpi(pdb1,pdb2):
                             xyz = math.sqrt(xyz)
                             #Write distance to attribute
                             atom1.xyz_change = xyz
+                        if atom1.restyp == "TYR" or atom1.restyp == "PHE":
+                            if "CE" in atom1.altid or "CD" in atom1.altid:
+                                if "CE" in atom2.altid or "CD" in atom2.altid:
+                                    x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                                    x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                                    xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                                    xyz = math.sqrt(xyz)
+                                    if xyz < atom1.xyz_change or isinstance(atom1.xyz_change, int):
+                                        atom1.xyz_change = xyz
+
     # Gather results on rank 0
     pdb1 = comm.gather(sc_pdb1, root=0)
     return pdb1
