@@ -11,10 +11,12 @@ Python3 and the modules sys, math, numpy (optional), mpi4py (optional)
 ## track_xyz.py usage
 This script will find the maximum xyz coordinate change between two pdb/cif files. The output will be a tabulated table sorted by the residues with the largest coordinate change.
 For now, the files should be aligned first with some other program (e.g. ChimeraX)  
-To include hetatm (ignored by default) add as a argument after the inputs:  
+To include hetatm (ignored by default) add as an argument after the inputs:  
 -HETATM  
-To include hydrogens (ignored by default) add as a argument after the inputs:  
+To include hydrogens (ignored by default) add as an argument after the inputs:  
 -ignore-hydrogens-false  
+If you want additional information (average per residue and CA/C1' distance), add as an argument after the inputs:  
+-more_info  
 ### Non-mpi
 python track_xyz.py *filename1 filename2* > output.txt
 ### Mpi
@@ -24,9 +26,9 @@ mpiexec -n *number of mpi processes* -host localhost python track_xyz_mpi.py *fi
 
 ## find_contacts.py usage
 This script will find all atoms between chains within a certain distance (for a given chain). The output will be a tabulated table following the original pdb atom order.  
-To include hetatm (ignored by default) add as a argument after the inputs:  
+To include hetatm (ignored by default) add as an argument after the inputs:  
 -HETATM  
-To include hydrogens (ignored by default) add as a argument after the inputs:  
+To include hydrogens (ignored by default) add as an argument after the inputs:  
 -ignore-hydrogens-false  
 ### Non-mpi
 python find_contacts.py *filename distance chainid* > output.txt
