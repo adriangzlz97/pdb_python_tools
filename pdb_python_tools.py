@@ -487,6 +487,52 @@ def compare_resi_pdb_mpi(pdb1,pdb2):
     pdb1 = comm.gather(sc_pdb1, root=0)
     return pdb1
 
+def compare_pdb_resi_xyz(pdb1, pdb2):
+    """
+    Compares two lists of Atoms (class)
+
+    Inputs
+    ------
+    pdb1, pdb2 : List of Atoms (class)
+
+    Returns
+    -------
+    Modifies self.xyz_change from pdb1 atoms (class) based on the
+    x, y, z change between pdb1 and pdb2.
+
+    """
+    # Iterate through the first atom list
+    for resi1 in pdb1:
+        for atom1 in pdb1:
+            for resi2 in pdb2:
+                # Iterate through the second atom list
+                for atom2 in pdb2:
+                    # Make sure it is the same atom being compared (same chain, seq number and atom name)
+                    if atom1.chainid == atom2.chainid:
+                        if atom1.seqid == atom2.seqid:
+                            if atom1.altid == atom2.altid and isinstance(atom1.xyz_change, int):
+                                # Get coordinates from each atom
+                                x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                                x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                                # Calculate vector distance
+                                xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                                xyz = math.sqrt(xyz)
+                                # Write distance to attribute on the first list
+                                atom1.xyz_change = xyz
+                                if atom1.altid == "CA" or atom1.altid == "C1'":
+                                    resi1.CA_xyz = xyz
+                            if atom1.restyp == "TYR" or atom1.restyp == "PHE":
+                                    if "CE" in atom1.altid or "CD" in atom1.altid:
+                                        if "CE" in atom2.altid or "CD" in atom2.altid:
+                                            x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                                            x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                                            xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                                            xyz = math.sqrt(xyz)
+                                            if xyz < atom1.xyz_change or isinstance(atom1.xyz_change, int):
+                                                atom1.xyz_change = xyz
+
+
+
 
 def find_contacts(pdb, distance, chain):
     """
