@@ -41,6 +41,171 @@ class Atom:
         """
         print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (self.atomid, self.element, self.altid, self.restyp, self.chainid, self.seqid, self.x, self.y, self.z, self.occ, self.biso, self.xyz_change))
 
+class Residue:
+    """
+    
+    """
+    def __init__(self, chainid, seqid, restyp, atom_list, max_xyz, average_xyz, CA_xyz):
+        self.chainid = chainid
+        self.seqid = seqid
+        self.restyp = restyp
+        self.atom_list = atom_list
+        self.max_xyz = max_xyz
+        self.average_xyz = average_xyz
+        self.CA_xyz = CA_xyz
+
+def get_resi_from_pdb(file, hetatm, hydrogens):
+    """
+    Parses through a pdb file and generates a list of atoms.
+
+    Inputs
+    ------
+    String indicating the pdb file to parse.
+
+    Returns
+    -------
+    List of atoms as Atom class.
+    """
+    # Read the file per line
+    file = open(file, 'r')
+    lines = file.readlines()
+    pdb = []
+    res_number = -1
+    # Iterate through the lines
+    for line in lines:
+        # Check that the line has atom information
+        if line[:4] == "ATOM":
+            if res_number < 0:
+                # Ignore hydrogens by default
+                if line[-2] != "H":
+                    # Add atoms to list by getting the attributes through indexing the line
+                    pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
+                    res_number += 1
+                # Gather hydrogens if -ignore-hydrogens-false flag is present
+                elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
+                    res_number += 1
+            if line[21:22].strip() == pdb[res_number].chainid and line[22:31].strip() == pdb[res_number].seqid:
+                pdb[res_number].atom_list += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
+            else:
+                
+        # If the -HETATM flag is present, do the same for HETATMs
+        if hetatm == "-HETATM":
+            if line[:6] == "HETATM":
+                if line[-2] != "H":
+                    pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
+                elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    pdb += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
+        # Ignore lines that do not include the atom information
+        else:
+            continue
+    return(pdb)
+
+def get_resi_from_cif(file, hetatm, hydrogens):
+    """
+    Parses through a cif file and generates a list of atoms.
+
+    Inputs
+    ------
+    String indicating the pdb file to parse.
+
+    Returns
+    -------
+    List of atoms as Atom class.
+    """
+    # Read file by lines
+    file = open(file, 'r')
+    lines = file.readlines()
+    # Set up dummy variable
+    cif = []
+    # Set up count to get the column order
+    count= -1
+    res_number = -1
+    # Iterate through the lines
+    for line in lines:
+        # Add counts each line
+        count += 1
+        # Reset counts at the start of a loop_, to get the column order
+        if "loop_" in line:
+            count = -1
+        # Get the order for each attribute
+        if "_atom_site.id" in line:
+            atomid = count
+        if "_atom_site.type_symbol" in line:
+            element = count
+        if "_atom_site.label_atom_id" in line:
+            altid = count
+        if "_atom_site.label_comp_id" in line:
+            restyp = count
+        if "_atom_site.auth_asym_id" in line:
+            chainid = count
+        elif "_atom_site.label_asym_id" in line:
+            chainid = count
+        if "_atom_site.auth_seq_id" in line:
+            seqid = count
+        elif "_atom_site.label_seq_id" in line:
+            seqid = count
+        if "_atom_site.Cartn_x" in line:
+            x = count
+        if "_atom_site.Cartn_y" in line:
+            y = count
+        if "_atom_site.Cartn_z" in line:
+            z = count
+        if "_atom_site.occupancy" in line:
+            occ = count
+        if "_atom_site.B_iso" in line:
+            biso = count
+        # Get atom attributes with the obtained order
+        if line[:4] == "ATOM":
+            line = line.split()
+            if res_number < 0:
+                if line[2] != "H":
+                    cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                    res_number += 1
+                elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                    res_number += 1
+            if line[chainid] == cif[res_number].chainid and line[seqid] == cif[res_number].seqid:
+                if line[2] != "H":
+                    cif[res_number].atom_list += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
+                # Get hydrogens if flag is present
+                elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    cif[res_number].atom_list += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
+            else:
+                if line[2] != "H":
+                    cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                    res_number += 1
+                elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                    res_number += 1
+        # Do the same for HETATM if flag is present
+        if hetatm == "-HETATM":
+            if line[:6] == "HETATM":
+                line = line.split()
+                if res_number < 0:
+                    if line[2] != "H":
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                        res_number += 1
+                    elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                        res_number += 1
+                if line[chainid] == cif[res_number].chainid and line[seqid] == cif[res_number].seqid:
+                    if line[2] != "H":
+                        cif[res_number].atom_list += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
+                    # Get hydrogens if flag is present
+                    elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                        cif[res_number].atom_list += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
+                else:
+                    if line[2] != "H":
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                        res_number += 1
+                    elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                        res_number += 1
+        else:
+            continue
+    return(cif)
+
 #Function to parse through the pdb file and obtain a list of atoms
 def get_atoms_from_pdb(file, hetatm, hydrogens):
     """
@@ -230,6 +395,62 @@ def compare_pdb_mpi(pdb1,pdb2):
     # Gather results on rank 0
     pdb1 = comm.gather(sc_pdb1, root=0)
     return pdb1
+
+def compare_resi_pdb_mpi(pdb1,pdb2):
+    """
+    Compares two lists of Atoms (class). Implements mpi.
+
+    Inputs
+    ------
+    pdb1, pdb2 : List of Atoms (class)
+
+    Returns
+    -------
+    Modifies self.xyz_change from pdb1 atoms (class) based on the
+    x, y, z change between pdb1 and pdb2.
+
+    """
+    # Set up MPI
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    # Scatter the lists
+    sc_pdb1 = comm.scatter(pdb1, root=0)
+    # Iterate through the part of the lists assigned to each rank
+    for i in zip(sc_pdb1):
+        for resi1 in i:
+            for atom1 in resi1.atom_list:
+                for resi2 in pdb2:
+                # Slowest part - Possibility for improving performance
+                    for atom2 in resi2.atom_list:
+                        # Make sure it is the same atom being compared
+                        if atom1.chainid == atom2.chainid:
+                            if atom1.seqid == atom2.seqid:
+                                if atom1.altid == atom2.altid and isinstance(atom1.xyz_change, int):
+                                    #Get coordinates from each atom
+                                    x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                                    x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                                    #Calculate vector distance
+                                    xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                                    xyz = math.sqrt(xyz)
+                                    #Write distance to attribute
+                                    atom1.xyz_change = xyz
+                                    if atom1.altid == "CA" or atom1.altid == "C1'":
+                                        resi1.CA_xyz = xyz
+                                if atom1.restyp == "TYR" or atom1.restyp == "PHE":
+                                    if "CE" in atom1.altid or "CD" in atom1.altid:
+                                        if "CE" in atom2.altid or "CD" in atom2.altid:
+                                            x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                                            x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                                            xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                                            xyz = math.sqrt(xyz)
+                                            if xyz < atom1.xyz_change or isinstance(atom1.xyz_change, int):
+                                                atom1.xyz_change = xyz
+
+    # Gather results on rank 0
+    pdb1 = comm.gather(sc_pdb1, root=0)
+    return pdb1
+
 
 def find_contacts(pdb, distance, chain):
     """
