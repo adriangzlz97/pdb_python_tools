@@ -165,77 +165,78 @@ def get_resi_from_cif(file, hetatm, hydrogens):
         if "loop_" in line:
             count = -1
         # Get the order for each attribute
-        if "_atom_site.id" in line:
-            atomid = count
-        if "_atom_site.type_symbol" in line:
-            element = count
-        if "_atom_site.label_atom_id" in line:
-            altid = count
-        if "_atom_site.label_comp_id" in line:
-            restyp = count
-        if "_atom_site.auth_asym_id" in line:
-            chainid = count
-        elif "_atom_site.label_asym_id" in line:
-            chainid = count
-        if "_atom_site.auth_seq_id" in line:
-            seqid = count
-        elif "_atom_site.label_seq_id" in line:
-            seqid = count
-        if "_atom_site.Cartn_x" in line:
-            x = count
-        if "_atom_site.Cartn_y" in line:
-            y = count
-        if "_atom_site.Cartn_z" in line:
-            z = count
-        if "_atom_site.occupancy" in line:
-            occ = count
-        if "_atom_site.B_iso" in line:
-            biso = count
+        if "esd" not in line[-4:].lower():
+            if "_atom_site.id" in line.lower():
+                atomid = count
+            if "_atom_site.type_symbol" in line.lower():
+                element = count
+            if "_atom_site.label_atom_id" in line.lower():
+                altid = count
+            if "_atom_site.label_comp_id" in line.lower():
+                restyp = count
+            if "_atom_site.auth_asym_id" in line.lower():
+                chainid = count
+            elif "_atom_site.label_asym_id" in line.lower():
+                chainid = count
+            if "_atom_site.auth_seq_id" in line.lower():
+                seqid = count
+            elif "_atom_site.label_seq_id" in line.lower():
+                seqid = count
+            if "_atom_site.cartn_x" in line.lower():
+                x = count
+            if "_atom_site.cartn_y" in line.lower():
+                y = count
+            if "_atom_site.cartn_z" in line.lower():
+                z = count
+            if "_atom_site.occupancy" in line.lower():
+                occ = count
+            if "_atom_site.b_iso" in line.lower():
+                biso = count
         # Get atom attributes with the obtained order
-        if line[:4] == "ATOM":
+        if "ATOM" in line[:10]:
             line = line.split()
             if res_number < 0:
-                if line[2] != "H":
+                if line[element] != "H":
                     cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
                     res_number += 1
-                elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
                     cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
                     res_number += 1
             if line[chainid] == cif[res_number].chainid and line[seqid] == cif[res_number].seqid:
-                if line[2] != "H":
+                if line[element] != "H":
                     cif[res_number].atom_list += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
                 # Get hydrogens if flag is present
-                elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
                     cif[res_number].atom_list += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
             else:
-                if line[2] != "H":
+                if line[element] != "H":
                     cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
                     res_number += 1
-                elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
                     cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
                     res_number += 1
         # Do the same for HETATM if flag is present
         if hetatm == "-HETATM":
-            if line[:6] == "HETATM":
+            if "HETATM" in line[:10]:
                 line = line.split()
                 if res_number < 0:
-                    if line[2] != "H":
+                    if line[element] != "H":
                         cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
                         res_number += 1
-                    elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
                         cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
                         res_number += 1
                 if line[chainid] == cif[res_number].chainid and line[seqid] == cif[res_number].seqid:
-                    if line[2] != "H":
+                    if line[element] != "H":
                         cif[res_number].atom_list += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
                     # Get hydrogens if flag is present
-                    elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
                         cif[res_number].atom_list += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
                 else:
-                    if line[2] != "H":
+                    if line[element] != "H":
                         cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
                         res_number += 1
-                    elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
                         cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
                         res_number += 1
         else:
@@ -628,47 +629,48 @@ def get_atoms_from_cif(file, hetatm, hydrogens):
         if "loop_" in line:
             count = -1
         # Get the order for each attribute
-        if "_atom_site.id" in line:
-            atomid = count
-        if "_atom_site.type_symbol" in line:
-            element = count
-        if "_atom_site.label_atom_id" in line:
-            altid = count
-        if "_atom_site.label_comp_id" in line:
-            restyp = count
-        if "_atom_site.auth_asym_id" in line:
-            chainid = count
-        elif "_atom_site.label_asym_id" in line:
-            chainid = count
-        if "_atom_site.auth_seq_id" in line:
-            seqid = count
-        elif "_atom_site.label_seq_id" in line:
-            seqid = count
-        if "_atom_site.Cartn_x" in line:
-            x = count
-        if "_atom_site.Cartn_y" in line:
-            y = count
-        if "_atom_site.Cartn_z" in line:
-            z = count
-        if "_atom_site.occupancy" in line:
-            occ = count
-        if "_atom_site.B_iso" in line:
-            biso = count
+        if "esd" not in line[-4:].lower():
+            if "_atom_site.id" in line.lower():
+                atomid = count
+            if "_atom_site.type_symbol" in line.lower():
+                element = count
+            if "_atom_site.label_atom_id" in line.lower():
+                altid = count
+            if "_atom_site.label_comp_id" in line.lower():
+                restyp = count
+            if "_atom_site.auth_asym_id" in line.lower():
+                chainid = count
+            elif "_atom_site.label_asym_id" in line.lower():
+                chainid = count
+            if "_atom_site.auth_seq_id" in line.lower():
+                seqid = count
+            elif "_atom_site.label_seq_id" in line.lower():
+                seqid = count
+            if "_atom_site.cartn_x" in line.lower():
+                x = count
+            if "_atom_site.cartn_y" in line.lower():
+                y = count
+            if "_atom_site.cartn_z" in line.lower():
+                z = count
+            if "_atom_site.occupancy" in line.lower():
+                occ = count
+            if "_atom_site.b_iso" in line.lower():
+                biso = count
         # Get atom attributes with the obtained order
-        if line[:4] == "ATOM":
+        if "ATOM" in line[:10]:
             line = line.split()
-            if line[2] != "H":
+            if line[element] != "H":
                 cif += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
             # Get hydrogens if flag is present
-            elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+            elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
                 cif += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
         # Do the same for HETATM if flag is present
         if hetatm == "-HETATM":
-            if line[:6] == "HETATM":
+            if "HETATM" in line[:10]:
                 line = line.split()
-                if line[2] != "H":
+                if line[element] != "H":
                     cif += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
-                elif line[2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
                     cif += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
         else:
             continue
