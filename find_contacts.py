@@ -8,13 +8,15 @@ from pdb_python_tools import find_contacts
 
 hetatm = 0
 hydrogens = 0
-
+polar = False
 # Check for flags
 for i in sys.argv:
     if i == "-HETATM":
         hetatm = i
     if i == "-ignore-hydrogens-false":
         hydrogens = i
+    if i == "-polar_only":
+        polar = True
 
 # Gather chainid
 chain = sys.argv[3]
@@ -29,7 +31,7 @@ elif ".cif" in sys.argv[1]:
 distance = float(sys.argv[2])
 
 # Find the contacts within that distance
-atom_pairs = find_contacts(pdb, distance, chain)
+atom_pairs = find_contacts(pdb, distance, chain, polar)
 
 # Print table
 print("Chain1\tResidue1\tResidue1 number\tAtom1\tChain2\tResidue2\tResidue2 number\tAtom2\tDistance")

@@ -14,6 +14,7 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 hetatm = 0
 hydrogens = 0
+polar = False
 
 # Check for flags
 for i in sys.argv:
@@ -21,6 +22,8 @@ for i in sys.argv:
         hetatm = i
     if i == "-ignore-hydrogens-false":
         hydrogens = i
+    if i == "-polar_only":
+        polar = True
 
 # Check format and parse with appropriate function
 if ".pdb" in sys.argv[1]:
@@ -41,7 +44,7 @@ else:
 distance = float(sys.argv[2])
 
 # Find the contacts within that distance through mpi
-atom_pairs = find_contacts_mpi(pdb, df_pdb, distance, chain)
+atom_pairs = find_contacts_mpi(pdb, df_pdb, distance, chain, polar)
 
 # Print table on root
 if rank == 0:
