@@ -154,6 +154,8 @@ def get_resi_from_cif(file, hetatm, hydrogens):
     lines = file.readlines()
     # Set up dummy variable
     cif = []
+    chainid = 999
+    seqid = 999
     # Set up count to get the column order
     count= -1
     res_number = -1
@@ -176,11 +178,11 @@ def get_resi_from_cif(file, hetatm, hydrogens):
                 restyp = count
             if "_atom_site.auth_asym_id" in line.lower():
                 chainid = count
-            elif "_atom_site.label_asym_id" in line.lower():
+            if chainid == 999 and "_atom_site.label_asym_id" in line.lower():
                 chainid = count
             if "_atom_site.auth_seq_id" in line.lower():
                 seqid = count
-            elif "_atom_site.label_seq_id" in line.lower():
+            if seqid == 999 and "_atom_site.label_seq_id" in line.lower():
                 seqid = count
             if "_atom_site.cartn_x" in line.lower():
                 x = count
@@ -648,6 +650,8 @@ def get_atoms_from_cif(file, hetatm, hydrogens):
     lines = file.readlines()
     # Set up dummy variable
     cif = []
+    chainid = 999
+    seqid = 999
     # Set up count to get the column order
     count= -1
     # Iterate through the lines
@@ -669,11 +673,11 @@ def get_atoms_from_cif(file, hetatm, hydrogens):
                 restyp = count
             if "_atom_site.auth_asym_id" in line.lower():
                 chainid = count
-            elif "_atom_site.label_asym_id" in line.lower():
+            if chainid == 999 and "_atom_site.label_asym_id" in line.lower():
                 chainid = count
             if "_atom_site.auth_seq_id" in line.lower():
                 seqid = count
-            elif "_atom_site.label_seq_id" in line.lower():
+            if seqid == 999 and "_atom_site.label_seq_id" in line.lower():
                 seqid = count
             if "_atom_site.cartn_x" in line.lower():
                 x = count
