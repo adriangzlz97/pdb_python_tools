@@ -15,8 +15,6 @@ To include hetatm (ignored by default) add as an argument after the inputs:
 -HETATM  
 To include hydrogens (ignored by default) add as an argument after the inputs:  
 -ignore-hydrogens-false  
-If you want additional information (average per residue and CA/C1' distance), add as an argument after the inputs:  
--more_info  
 ### Non-mpi
 python track_xyz.py *filename1 filename2* > output.txt
 ### Mpi
@@ -30,6 +28,8 @@ To include hetatm (ignored by default) add as an argument after the inputs:
 -HETATM  
 To include hydrogens (ignored by default) add as an argument after the inputs:  
 -ignore-hydrogens-false  
+To only include possible polar contacts add as an argument after the inputs:  
+-polar_only  
 ### Non-mpi
 python find_contacts.py *filename distance chainid* > output.txt
 ### Mpi
