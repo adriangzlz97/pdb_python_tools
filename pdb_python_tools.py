@@ -517,10 +517,10 @@ def compare_pdb_resi_xyz(pdb1, pdb2):
     """
     # Iterate through the first atom list
     for resi1 in pdb1:
-        for atom1 in pdb1:
+        for atom1 in resi1.atom_list:
             for resi2 in pdb2:
                 # Iterate through the second atom list
-                for atom2 in pdb2:
+                for atom2 in resi2.atom_list:
                     # Make sure it is the same atom being compared (same chain, seq number and atom name)
                     if atom1.chainid == atom2.chainid:
                         if atom1.seqid == atom2.seqid:
