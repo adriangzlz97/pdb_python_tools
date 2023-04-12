@@ -1,9 +1,8 @@
 #!/bin/env/python
-import sys
 from pdb_python_tools import Atom
 from pdb_python_tools import get_atoms_from_pdb
 from pdb_python_tools import get_atoms_from_cif
-import math
+import argparse
 import numpy as np
 from mpi4py import MPI
 from pdb_python_tools import find_contacts_mpi
@@ -17,31 +16,35 @@ hydrogens = 0
 polar = False
 
 # Check for flags
-for i in sys.argv:
-    if i == "-HETATM":
-        hetatm = i
-    if i == "-ignore-hydrogens-false":
-        hydrogens = i
-    if i == "-polar_only":
-        polar = True
+parser = argparse.ArgumentParser(
+                    prog='find_contacts',
+                    description='Find possible contacts between chains for a given chain and within a given distance',
+                    epilog='Usage: pdb1/cif1 -arguments')
+parser.add_argument('pdb', help='coordinate file (pdb/cif)')
+parser.add_argument('--chain', help='chain id to analyze', required=True)
+parser.add_argument('--distance', help='distance to check',type=float, required=True)
+parser.add_argument('-HET','--HETATM', action='store_true', dest='hetatm', help='include hetatms')
+parser.add_argument('-hy','--hydrogens', action='store_true', dest='hydrogens', help='include hydrogens')
+parser.add_argument('-p','--polar_only', action='store_true', dest='polar', help='check only polar')
+args = parser.parse_args()
+pdb = args.pdb
+chain = args.chain
+distance = args.distance
+hetatm = args.hetatm
+hydrogens = args.hydrogens
+polar = args.polar
 
 # Check format and parse with appropriate function
-if ".pdb" in sys.argv[1]:
-    pdb = get_atoms_from_pdb(sys.argv[1], hetatm, hydrogens)
-elif ".cif" in sys.argv[1]:
-    pdb = get_atoms_from_cif(sys.argv[1], hetatm, hydrogens)
-
-# Gather chainid
-chain = sys.argv[3]
+if ".pdb" in pdb:
+    pdb = get_atoms_from_pdb(pdb, hetatm, hydrogens)
+elif ".cif" in pdb:
+    pdb = get_atoms_from_cif(pdb, hetatm, hydrogens)
 
 # Distribute over mpi processes
 if rank == 0:
     df_pdb = np.array_split(pdb,size)  
 else:
     df_pdb = None
-
-# Gather max distance to consider
-distance = float(sys.argv[2])
 
 # Find the contacts within that distance through mpi
 atom_pairs = find_contacts_mpi(pdb, df_pdb, distance, chain, polar)
