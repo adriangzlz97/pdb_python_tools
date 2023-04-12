@@ -43,7 +43,17 @@ class Atom:
 
 class Residue:
     """
-    
+    Define residue class.
+
+    Attributes
+    ----------
+    chainid : chain id
+    seqid : residue number
+    restyp : residue type
+    atom_list : list of Atom objects belonging to that Residue
+    max_xyz : maximum xyz change within the residue
+    average_xyz : average xyz change within the residue
+    CA_xyz : Calpha/C1' xyz change
     """
     def __init__(self, chainid, seqid, restyp, atom_list, max_xyz, average_xyz, CA_xyz):
         self.chainid = chainid
@@ -56,7 +66,7 @@ class Residue:
 
 def get_resi_from_pdb(file, hetatm, hydrogens):
     """
-    Parses through a pdb file and generates a list of atoms.
+    Parses through a pdb file and generates a list of Residues with their list of atoms.
 
     Inputs
     ------
@@ -64,11 +74,12 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
 
     Returns
     -------
-    List of atoms as Atom class.
+    List of residues as Residue class with list of Atom classes within each residue.
     """
     # Read the file per line
     file = open(file, 'r')
     lines = file.readlines()
+    # Set up variables
     pdb = []
     res_number = -1
     # Iterate through the lines
@@ -78,7 +89,7 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
             if res_number < 0:
                 # Ignore hydrogens by default
                 if line[-2] != "H":
-                    # Add atoms to list by getting the attributes through indexing the line
+                    # Add residues to list and atoms to the residue by getting the attributes through indexing the line
                     pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
                     res_number += 1
                 # Gather hydrogens if -ignore-hydrogens-false flag is present
@@ -95,7 +106,7 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
             else:
                 # Ignore hydrogens by default
                 if line[-2] != "H":
-                    # Add atoms to list by getting the attributes through indexing the line
+                    # Add residues to list and atoms to the residue by getting the attributes through indexing the line
                     pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
                     res_number += 1
                 # Gather hydrogens if -ignore-hydrogens-false flag is present
@@ -139,15 +150,15 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
 
 def get_resi_from_cif(file, hetatm, hydrogens):
     """
-    Parses through a cif file and generates a list of atoms.
+    Parses through a cif file and generates a list of Residues with their list of atoms.
 
     Inputs
     ------
-    String indicating the pdb file to parse.
+    String indicating the cif file to parse.
 
     Returns
     -------
-    List of atoms as Atom class.
+    List of residues as Residue class with list of Atom classes within each residue.
     """
     # Read file by lines
     file = open(file, 'r')
@@ -194,7 +205,7 @@ def get_resi_from_cif(file, hetatm, hydrogens):
                 occ = count
             if "_atom_site.b_iso" in line.lower():
                 biso = count
-        # Get atom attributes with the obtained order
+        # Get atom attributes with the obtained order within a Residue class
         if "ATOM" in line[:10]:
             line = line.split()
             if res_number < 0:
@@ -437,15 +448,15 @@ def compare_pdb_mpi(pdb1,pdb2):
 
 def compare_resi_pdb_mpi(pdb1,pdb2):
     """
-    Compares two lists of Atoms (class). Implements mpi.
+    Compares two lists of Residues (class). Implements mpi.
 
     Inputs
     ------
-    pdb1, pdb2 : List of Atoms (class)
+    pdb1, pdb2 : List of Residues (class)
 
     Returns
     -------
-    Modifies self.xyz_change from pdb1 atoms (class) based on the
+    Modifies self.xyz_change from pdb1 Atoms within the list in the Residue (class) based on the
     x, y, z change between pdb1 and pdb2.
 
     """
@@ -492,15 +503,15 @@ def compare_resi_pdb_mpi(pdb1,pdb2):
 
 def compare_pdb_resi_xyz(pdb1, pdb2):
     """
-    Compares two lists of Atoms (class)
+    Compares two lists of Residues (class)
 
     Inputs
     ------
-    pdb1, pdb2 : List of Atoms (class)
+    pdb1, pdb2 : List of Residues (class)
 
     Returns
     -------
-    Modifies self.xyz_change from pdb1 atoms (class) based on the
+    Modifies self.xyz_change from pdb1 Atoms within the list in the Residue (class) based on the
     x, y, z change between pdb1 and pdb2.
 
     """
