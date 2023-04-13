@@ -7,7 +7,7 @@ import argparse
 
 # Check for flags
 parser = argparse.ArgumentParser(
-                    prog='find_contacts',
+                    prog='find_contacts.py',
                     description='Find possible contacts between chains for a given chain and within a given distance',
                     epilog='Usage: pdb1/cif1 -arguments')
 parser.add_argument('pdb', help='coordinate file (pdb/cif)')

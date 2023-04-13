@@ -7,7 +7,7 @@ from pdb_python_tools import compare_pdb_resi_xyz
 import argparse
 # Check for flags
 parser = argparse.ArgumentParser(
-                    prog='Trackxyz',
+                    prog='track_xyz.py',
                     description='Track xyz changes between two equivalent and aligned pdb/cif files',
                     epilog='Usage: pdb1/cif1 pdb2/cif2 -arguments')
 parser.add_argument('pdb1', help='first coordinate file (pdb/cif)')

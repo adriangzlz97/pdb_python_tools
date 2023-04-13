@@ -13,7 +13,7 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 # Check for flags
 parser = argparse.ArgumentParser(
-                    prog='Trackxyz',
+                    prog='track_xyz_mpi.py',
                     description='Track xyz changes between two equivalent and aligned pdb/cif files',
                     epilog='Usage: pdb1/cif1 pdb2/cif2 -arguments')
 parser.add_argument('pdb1', help='first coordinate file (pdb/cif)')
