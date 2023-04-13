@@ -93,7 +93,7 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
                     pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
                     res_number += 1
                 # Gather hydrogens if -ignore-hydrogens-false flag is present
-                elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                elif line[-2] == "H" and hydrogens == True:
                     pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
                     res_number += 1
             if line[21:22].strip() == pdb[res_number].chainid and line[22:31].strip() == pdb[res_number].seqid:
@@ -101,7 +101,7 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
                 if line[-2] != "H":
                     pdb[res_number].atom_list += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
                 # Gather hydrogens if -ignore-hydrogens-false flag is present
-                elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                elif line[-2] == "H" and hydrogens == True:
                     pdb[res_number].atom_list += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
             else:
                 # Ignore hydrogens by default
@@ -110,11 +110,11 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
                     pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
                     res_number += 1
                 # Gather hydrogens if -ignore-hydrogens-false flag is present
-                elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                elif line[-2] == "H" and hydrogens == True:
                     pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
                     res_number += 1
         # If the -HETATM flag is present, do the same for HETATMs
-        if hetatm == "-HETATM":
+        if hetatm == True:
             if line[:6] == "HETATM":
                 if res_number < 0:
                     # Ignore hydrogens by default
@@ -123,7 +123,7 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
                         pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
                         res_number += 1
                     # Gather hydrogens if -ignore-hydrogens-false flag is present
-                    elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    elif line[-2] == "H" and hydrogens == True:
                         pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
                         res_number += 1
                 if line[21:22].strip() == pdb[res_number].chainid and line[22:31].strip() == pdb[res_number].seqid:
@@ -131,7 +131,7 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
                     if line[-2] != "H":
                         pdb[res_number].atom_list += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
                     # Gather hydrogens if -ignore-hydrogens-false flag is present
-                    elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    elif line[-2] == "H" and hydrogens == True:
                         pdb[res_number].atom_list += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
                 else:
                     # Ignore hydrogens by default
@@ -140,7 +140,7 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
                         pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
                         res_number += 1
                     # Gather hydrogens if -ignore-hydrogens-false flag is present
-                    elif line[-2] == "H" and hydrogens == "-ignore-hydrogens-false":
+                    elif line[-2] == "H" and hydrogens == True:
                         pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
                         res_number += 1
         # Ignore lines that do not include the atom information
