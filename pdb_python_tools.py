@@ -55,14 +55,14 @@ class Residue:
     average_xyz : average xyz change within the residue
     CA_xyz : Calpha/C1' xyz change
     """
-    def __init__(self, chainid, seqid, restyp, atom_list, max_xyz, average_xyz, CA_xyz):
+    def __init__(self, chainid, seqid, restyp, atom_list, max_xyz, average_xyz, CA):
         self.chainid = chainid
         self.seqid = seqid
         self.restyp = restyp
         self.atom_list = atom_list
         self.max_xyz = max_xyz
         self.average_xyz = average_xyz
-        self.CA_xyz = CA_xyz
+        self.CA = CA
 
 def get_resi_from_pdb(file, hetatm, hydrogens):
     """
@@ -90,16 +90,21 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
                 # Ignore hydrogens by default
                 if line[-2] != "H":
                     # Add residues to list and atoms to the residue by getting the attributes through indexing the line
-                    pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
+                    if line[11:17].strip() == "CA" or line[11:17].strip() == "C1":
+                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 ))]
+                    else:
+                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                     res_number += 1
                 # Gather hydrogens if -ignore-hydrogens-false flag is present
                 elif line[-2] == "H" and hydrogens == True:
-                    pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
+                    pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                     res_number += 1
             if line[21:22].strip() == pdb[res_number].chainid and line[22:31].strip() == pdb[res_number].seqid:
                 # Ignore hydrogens by default
                 if line[-2] != "H":
                     pdb[res_number].atom_list += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
+                    if line[11:17].strip() == "CA" or line[11:17].strip() == "C1":
+                        pdb[res_number].CA = Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )
                 # Gather hydrogens if -ignore-hydrogens-false flag is present
                 elif line[-2] == "H" and hydrogens == True:
                     pdb[res_number].atom_list += [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )]
@@ -107,11 +112,14 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
                 # Ignore hydrogens by default
                 if line[-2] != "H":
                     # Add residues to list and atoms to the residue by getting the attributes through indexing the line
-                    pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
+                    if line[11:17].strip() == "CA" or line[11:17].strip() == "C1":
+                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 ))]
+                    else:
+                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                     res_number += 1
                 # Gather hydrogens if -ignore-hydrogens-false flag is present
                 elif line[-2] == "H" and hydrogens == True:
-                    pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
+                    pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                     res_number += 1
         # If the -HETATM flag is present, do the same for HETATMs
         if hetatm == True:
@@ -120,11 +128,11 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
                     # Ignore hydrogens by default
                     if line[-2] != "H":
                         # Add atoms to list by getting the attributes through indexing the line
-                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
+                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                         res_number += 1
                     # Gather hydrogens if -ignore-hydrogens-false flag is present
                     elif line[-2] == "H" and hydrogens == True:
-                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
+                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                         res_number += 1
                 if line[21:22].strip() == pdb[res_number].chainid and line[22:31].strip() == pdb[res_number].seqid:
                     # Ignore hydrogens by default
@@ -137,11 +145,11 @@ def get_resi_from_pdb(file, hetatm, hydrogens):
                     # Ignore hydrogens by default
                     if line[-2] != "H":
                         # Add atoms to list by getting the attributes through indexing the line
-                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
+                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                         res_number += 1
                     # Gather hydrogens if -ignore-hydrogens-false flag is present
                     elif line[-2] == "H" and hydrogens == True:
-                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, 0)]
+                        pdb += [Residue(line[21:22].strip(), line[22:31].strip(), line[17:21].strip(), [Atom(line[4:11].strip(),line[-2], line[11:17].strip(), line[17:21].strip(), line[21:22].strip(), line[22:31].strip(), float(line[31:38].strip()), float(line[38:46].strip()), float(line[46:54].strip()), float(line[55:60].strip()), float(line[60:67].strip()), 0 )], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                         res_number += 1
         # Ignore lines that do not include the atom information
         else:
@@ -210,34 +218,42 @@ def get_resi_from_cif(file, hetatm, hydrogens):
             line = line.split()
             if res_number < 0:
                 if line[element] != "H":
-                    cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                    if line[altid] == "CA" or line[altid] == "C1":
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0))]
+                    else:
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                     res_number += 1
                 elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
-                    cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                    cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                     res_number += 1
             if line[chainid] == cif[res_number].chainid and line[seqid] == cif[res_number].seqid:
                 if line[element] != "H":
                     cif[res_number].atom_list += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
+                    if line[altid] == "CA" or line[altid] == "C1":
+                        cif[res_number].CA = Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)                    
                 # Get hydrogens if flag is present
                 elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
                     cif[res_number].atom_list += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
             else:
                 if line[element] != "H":
-                    cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                    if line[altid] == "CA" or line[altid] == "C1":
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0))]
+                    else:
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                     res_number += 1
                 elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
-                    cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                    cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                     res_number += 1
         # Do the same for HETATM if flag is present
-        if hetatm == "-HETATM":
+        if hetatm == True:
             if "HETATM" in line[:10]:
                 line = line.split()
                 if res_number < 0:
                     if line[element] != "H":
-                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                         res_number += 1
                     elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
-                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                         res_number += 1
                 if line[chainid] == cif[res_number].chainid and line[seqid] == cif[res_number].seqid:
                     if line[element] != "H":
@@ -247,10 +263,10 @@ def get_resi_from_cif(file, hetatm, hydrogens):
                         cif[res_number].atom_list += [Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)]
                 else:
                     if line[element] != "H":
-                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                         res_number += 1
                     elif line[element] == "H" and hydrogens == "-ignore-hydrogens-false":
-                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, 0,)]
+                        cif += [Residue(line[chainid],line[seqid], line[restyp],[Atom(line[atomid], line[element], line[altid], line[restyp], line[chainid], line[seqid], float(line[x]), float(line[y]), float(line[z]), float(line[occ]), float(line[biso]), 0)], 0, 0, Atom(0,0,0,0,0,0,0,0,0,0,0,0))]
                         res_number += 1
         else:
             continue
@@ -485,8 +501,6 @@ def compare_resi_pdb_mpi(pdb1,pdb2):
                                     xyz = math.sqrt(xyz)
                                     #Write distance to attribute
                                     atom1.xyz_change = xyz
-                                    if atom1.altid == "CA" or atom1.altid == "C1'":
-                                        resi1.CA_xyz = xyz
                                 if atom1.restyp == "TYR" or atom1.restyp == "PHE":
                                     if "CE" in atom1.altid or "CD" in atom1.altid:
                                         if "CE" in atom2.altid or "CD" in atom2.altid:
@@ -533,8 +547,6 @@ def compare_pdb_resi_xyz(pdb1, pdb2):
                                 xyz = math.sqrt(xyz)
                                 # Write distance to attribute on the first list
                                 atom1.xyz_change = xyz
-                                if atom1.altid == "CA" or atom1.altid == "C1'":
-                                    resi1.CA_xyz = xyz
                             if atom1.restyp == "TYR" or atom1.restyp == "PHE":
                                     if "CE" in atom1.altid or "CD" in atom1.altid:
                                         if "CE" in atom2.altid or "CD" in atom2.altid:
