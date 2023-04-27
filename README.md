@@ -39,6 +39,15 @@ mpiexec -n *number of mpi processes* python find_contacts_mpi.py *filename1 dist
 If you encounter an error about host, try:  
 mpiexec -n *number of mpi processes* -host localhost python find_contacts_mpi.py *filename1 distance chainid* > output.txt  
 
+## analyze_differences.py usage  
+his script will find the maximum xyz coordinate change between two pdb/cif files. The output will be a tabulated table sorted by the residues with the largest coordinate change.
+For now, the files should be aligned first with some other program (e.g. ChimeraX)  
+To include hetatm (ignored by default) add as an argument after the inputs:  
+--HETATM or -HET  
+To include hydrogens (ignored by default) add as an argument after the inputs:  
+--hydrogens or -hy  
+It can be run with mpi or not, but mpi4py is required.  
+
 # Test files  
 In test_files folder, you can try the test files. They are ribosomes structures, so they are quite big and the program track_xyz will take quite a while (approx 25-30 min) unless you use mpi with a few cores. There are also outputs of what you would get with the command indicated in the .txt files.  
 This test is comparing two cryoEM ribosome structures frozen at different time-points. You can track the changes between both structures with the track_xyz program.  
