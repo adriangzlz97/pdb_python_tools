@@ -8,7 +8,7 @@ I am aware there might be available tools that do similar things, as well as lib
 # For usage of any of these tools, run them with -h  
 
 # Requirements
-Python3 and the modules argparse, math, numpy (optional), mpi4py (optional)
+Python3 and the modules argparse, math, numpy, mpi4py
 
 ## track_xyz.py usage
 This script will find the maximum xyz coordinate change between two pdb/cif files. The output will be a tabulated table sorted by the residues with the largest coordinate change.
