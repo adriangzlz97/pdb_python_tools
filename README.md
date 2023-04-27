@@ -40,7 +40,7 @@ If you encounter an error about host, try:
 mpiexec -n *number of mpi processes* -host localhost python find_contacts_mpi.py *filename1 distance chainid* > output.txt  
 
 ## analyze_differences.py usage  
-his script will find the maximum xyz coordinate change between two pdb/cif files. The output will be a tabulated table sorted by the residues with the largest coordinate change.
+his script will find the maximum xyz coordinate change between two pdb/cif files (they do not need to be equivalent). The output will be a tabulated table sorted by the residues with the largest coordinate change.
 For now, the files should be aligned first with some other program (e.g. ChimeraX)  
 To include hetatm (ignored by default) add as an argument after the inputs:  
 --HETATM or -HET  
