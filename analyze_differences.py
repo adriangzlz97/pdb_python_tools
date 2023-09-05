@@ -20,12 +20,11 @@ parser = argparse.ArgumentParser(
 parser.add_argument('pdb1', help='first coordinate file (pdb/cif)')
 parser.add_argument('pdb2', help='second coordinate file (pdb/cif)')
 parser.add_argument('-HET','--HETATM', action='store_true', dest='hetatm', help='include hetatms')
-parser.add_argument('-hy','--hydrogens', action='store_true', dest='hydrogens', help='include hydrogens')
 args = parser.parse_args()
 pdb1 = args.pdb1
 pdb2 = args.pdb2
 hetatm = args.hetatm
-hydrogens = args.hydrogens
+hydrogens = False
 
 # Check format and parse with appropriate function
 if ".pdb" in pdb2:
