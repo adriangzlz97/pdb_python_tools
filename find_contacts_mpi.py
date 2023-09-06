@@ -6,7 +6,7 @@ from pdb_python_tools import get_resi_from_cif
 import argparse
 import numpy as np
 from mpi4py import MPI
-from pdb_python_tools import find_contacts_resi_mpi
+from pdb_python_tools_mpi import find_contacts_resi_mpi
 
 # Set up MPI
 comm = MPI.COMM_WORLD
