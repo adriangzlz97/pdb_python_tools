@@ -1,8 +1,9 @@
 #!/bin/env/python
 from pdb_python_tools import Atom
-from pdb_python_tools import get_atoms_from_pdb
-from pdb_python_tools import get_atoms_from_cif
-from pdb_python_tools import find_contacts
+from pdb_python_tools import Residue
+from pdb_python_tools import get_resi_from_pdb
+from pdb_python_tools import get_resi_from_cif
+from pdb_python_tools import find_contacts_resi
 import argparse
 
 # Check for flags
@@ -26,12 +27,12 @@ polar = args.polar
 
 # Check format and parse with appropriate function
 if ".pdb" in pdb:
-    pdb = get_atoms_from_pdb(pdb, hetatm, hydrogens)
+    pdb = get_resi_from_pdb(pdb, hetatm, hydrogens)
 elif ".cif" in pdb:
-    pdb = get_atoms_from_cif(pdb, hetatm, hydrogens)
+    pdb = get_resi_from_cif(pdb, hetatm, hydrogens)
 
 # Find the contacts within that distance
-atom_pairs = find_contacts(pdb, distance, chain, polar)
+atom_pairs = find_contacts_resi(pdb, distance, chain, polar)
 
 # Print table
 print("Chain1\tResidue1\tResidue1 number\tAtom1\tChain2\tResidue2\tResidue2 number\tAtom2\tDistance")

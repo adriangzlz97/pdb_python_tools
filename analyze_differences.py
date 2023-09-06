@@ -79,6 +79,7 @@ def compare_resi_CA(df_pdb1,pdb2):
                         #Write distance to attribute
                         resi1.CA.xyz_change = xyz
                         resi_pairs += [[resi1,resi2]]
+                        count += 1
                     else:
                         # Check if the distance is the same or less
                         # Get coordinates from each atom
@@ -90,7 +91,7 @@ def compare_resi_CA(df_pdb1,pdb2):
                         if xyz < resi1.CA.xyz_change:
                             resi1.CA.xyz_change = xyz
                             resi_pairs[count] = [resi1,resi2]
-            count += 1
+            
     # Gather results on rank 0
     resi_pairs = comm.gather(resi_pairs, root=0)
     if rank == 0:
