@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from pdb_python_tools import Atom
 from pdb_python_tools import get_resi_from_cif
-from pdb_python_tools import compare_resi_pdb_mpi
+from pdb_python_tools_mpi import compare_resi_pdb_mpi
 from pdb_python_tools import get_resi_from_pdb
 from pdb_python_tools import Residue
 import argparse
