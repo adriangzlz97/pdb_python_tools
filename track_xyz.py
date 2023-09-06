@@ -1,4 +1,4 @@
-#!/bin/env/python
+#!/usr/bin/env python3
 from pdb_python_tools import Atom
 from pdb_python_tools import Residue
 from pdb_python_tools import get_resi_from_cif
