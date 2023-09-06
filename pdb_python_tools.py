@@ -737,3 +737,55 @@ def get_atoms_from_cif(file, hetatm, hydrogens):
         else:
             continue
     return(cif)
+
+def find_contacts_resi(pdb, distance, chain, polar):
+    """
+    Finds all atoms from different chains within a specific distance and returns a list of pairs.
+    """
+    atom_pairs = []
+    # Iterate through atoms
+    for resi1 in pdb:
+        # Only consider atoms for a given chain
+        if resi1.chainid == chain:
+            if polar == True:
+                for resi2 in pdb:
+                    # Consider only atoms from different chain for the comparison
+                    if resi1.chainid != resi2.chainid:
+                        #Check their CA x coord is within 20Å
+                        if abs(resi1.CA.x - resi2.CA.x) < 20:
+                            #iterate over residue
+                            for atom1 in resi1.atom_list:
+                                if atom1.element == "O" or atom1.element == "N" or atom1.element == "P" or atom1.element == "S":
+                                    for atom2 in resi2.atom_list:
+                                        if atom2.element == "O" or atom2.element == "N" or atom2.element == "P" or atom2.element == "S":
+                                            # Get coordinates from each atom
+                                            x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                                            x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                                            # Calculate vector distance
+                                            xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                                            xyz = math.sqrt(xyz)
+                                            if xyz <= distance:
+                                                # Ignore duplicate (the opposite pair, reversed)
+                                                if [atom2,atom1,xyz] not in atom_pairs:
+                                                    atom_pairs += [[atom1,atom2,xyz]]
+        # Compare with all other atoms. Slowest part - possibility for improvement
+            else:
+                for resi2 in pdb:
+                    # Consider only atoms from different chain for the comparison
+                    if resi1.chainid != resi2.chainid:
+                        #Check their CA x coord is within 20Å
+                        if abs(resi1.CA.x - resi2.CA.x) < 20:
+                            #iterate over residue
+                            for atom1 in resi1.atom_list:
+                                for atom2 in resi2.atom_list:
+                                    # Get coordinates from each atom
+                                    x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                                    x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                                    # Calculate vector distance
+                                    xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                                    xyz = math.sqrt(xyz)
+                                    if xyz <= distance:
+                                        # Ignore duplicate (the opposite pair, reversed)
+                                        if [atom2,atom1,xyz] not in atom_pairs:
+                                            atom_pairs += [[atom1,atom2,xyz]]
+    return(atom_pairs)
