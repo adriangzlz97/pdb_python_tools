@@ -128,6 +128,22 @@ def compare_resi_pdb_mpi(pdb1,pdb2):
                                             xyz = math.sqrt(xyz)
                                             if xyz < atom1.xyz_change or isinstance(atom1.xyz_change, int):
                                                 atom1.xyz_change = xyz
+                                    elif atom1.restyp == "LEU":
+                                        if "D1" in atom1.altid or "D2" in atom1.altid:
+                                            x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                                            x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                                            xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                                            xyz = math.sqrt(xyz)
+                                            if xyz < atom1.xyz_change or isinstance(atom1.xyz_change, int):
+                                                atom1.xyz_change = xyz
+                                    elif atom1.restyp == "VAL":
+                                        if "CG1" in atom1.altid or "CG2" in atom1.altid:
+                                            x1, y1, z1 = atom1.x, atom1.y, atom1.z
+                                            x2, y2, z2 = atom2.x, atom2.y, atom2.z
+                                            xyz = (x1-x2)**2+(y1-y2)**2+(z1-z2)**2
+                                            xyz = math.sqrt(xyz)
+                                            if xyz < atom1.xyz_change or isinstance(atom1.xyz_change, int):
+                                                atom1.xyz_change = xyz
 
     # Gather results on rank 0
     pdb1 = comm.gather(sc_pdb1, root=0)
