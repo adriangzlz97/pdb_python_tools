@@ -22,11 +22,11 @@ hydrogens = args.hydrogens
 #  Check format and parse with appropriate function
 if ".pdb" in pdb1:
     pdb1 = get_resi_from_pdb(pdb1, hetatm, hydrogens)
-elif ".cif" in pdb1:
+elif ".cif" or ".mmcif" in pdb1:
     pdb1 = get_resi_from_cif(pdb1, hetatm, hydrogens)
 if ".pdb" in pdb2:
     pdb2 = get_resi_from_pdb(pdb2, hetatm, hydrogens)
-elif ".cif" in pdb2:
+elif ".cif" or ".mmcif" in pdb2:
     pdb2 = get_resi_from_cif(pdb2, hetatm, hydrogens)
 
 # Compare both pdbs 
