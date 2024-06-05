@@ -38,7 +38,7 @@ polar = args.polar
 # Check format and parse with appropriate function
 if ".pdb" in pdb:
     pdb = get_resi_from_pdb(pdb, hetatm, hydrogens)
-elif ".cif" in pdb:
+elif ".cif" or ".mmcif" in pdb:
     pdb = get_resi_from_cif(pdb, hetatm, hydrogens)
 
 # Distribute over mpi processes
