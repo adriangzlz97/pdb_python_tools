@@ -46,9 +46,9 @@ To include hetatm (ignored by default) add as an argument after the inputs:
 --HETATM or -HET  
 To include hydrogens (ignored by default) add as an argument after the inputs:  
 --hydrogens or -hy  
-It can be run with mpi or not, but mpi4py is required.  
+It can be run with mpi or not
 
 # Test files  
-In test_files folder, you can try the test files. They are ribosomes structures, so they are quite big and the program track_xyz will take quite a while (approx 25-30 min) unless you use mpi with a few cores. There are also outputs of what you would get with the command indicated in the .txt files.  
+In test_files folder, you can try the test files. There are also outputs of what you would get with the command indicated in the .txt files.  
 This test is comparing two cryoEM ribosome structures frozen at different time-points. You can track the changes between both structures with the track_xyz program.  
 The other test finds all the contacts of the mRNA (chain 4) with other chains with find_contacts. 
