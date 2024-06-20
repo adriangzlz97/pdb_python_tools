@@ -33,7 +33,8 @@ To only get one contact per residue to another residue:
 --simple or -s  
 ### Non-mpi
 python find_contacts.py *filename --distance distance --chain chainid(auth)* > output.txt
-### Mpi (not recommended, actually slower at the moment)
+### Mpi (due to overhead, it can be slower in small structures)  
+mpiexec -n *number of mpi processes* -host localhost python find_contacts.py *filename --distance distance --chain chainid(auth)* > output.txt
 
 ## CA_difference.py usage  
 This script will find the maximum xyz CA/C1' coordinate change between two pdb/cif files (they do not need to be equivalent). The output will be a tabulated table sorted by the residues with the largest coordinate change.
