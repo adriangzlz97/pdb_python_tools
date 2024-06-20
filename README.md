@@ -30,7 +30,8 @@ To include hydrogens (ignored by default) add as an argument after the inputs:
 To only include possible polar contacts add as an argument after the inputs:  
 --polar_only or -p  
 To only get one contact per residue to another residue:  
---simple or -s  
+--all or -a  
+Show all atom-atom contacts  
 ### Non-mpi
 python find_contacts.py *filename --distance distance --chain chainid(auth)* > output.txt
 ### Mpi (due to overhead, it can be slower in small structures)  
