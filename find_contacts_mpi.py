@@ -15,7 +15,7 @@ size = comm.Get_size()
 hetatm = 0
 hydrogens = 0
 polar = False
-simple = False
+all = False
 
 # Check for flags
 parser = argparse.ArgumentParser(
@@ -28,7 +28,7 @@ parser.add_argument('--distance', help='distance to check',type=float, required=
 parser.add_argument('-HET','--HETATM', action='store_true', dest='hetatm', help='include hetatms')
 parser.add_argument('-hy','--hydrogens', action='store_true', dest='hydrogens', help='include hydrogens')
 parser.add_argument('-p','--polar_only', action='store_true', dest='polar', help='check only polar')
-parser.add_argument('-s','--simple', action='store_true', dest='simple', help='simple output: just display the residues involved and closest distance')
+parser.add_argument('-a','--all', action='store_true', dest='all', help='all output: display all atoms involved and distances')
 args = parser.parse_args()
 pdb = args.pdb
 chain = args.chain
@@ -36,7 +36,7 @@ distance = args.distance
 hetatm = args.hetatm
 hydrogens = args.hydrogens
 polar = args.polar
-simple = args.simple
+all = args.all
 
 # Check format and parse with appropriate function
 if ".pdb" in pdb:
@@ -55,7 +55,7 @@ atom_pairs = find_contacts_resi_mpi(pdb, df_pdb, distance, chain, polar)
 
 # Print table on root
 if rank == 0:
-    if simple:
+    if not all:
         n=0
         for i in atom_pairs:
             if n == 0:
